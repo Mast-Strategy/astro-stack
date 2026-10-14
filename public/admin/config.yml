@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.239.1/schema/sveltia-cms.json
+
+backend:
+  name: github
+  repo: anthonyashley/astro-plus-testing
+  branch: main
+
+media_folder: public/images
+public_folder: /images
+
+output:
+  # Astro's Zod schemas reject empty optional values, so drop them from the files.
+  omit_empty_optional_fields: true
+
+collections:
+  - name: pages
+    label: Pages
+    files:
+      - name: home
+        label: Home page
+        file: src/content/pages/home.md
+        fields:
+          - { name: title, label: Page name }
+          - { name: description, label: Search engine description, widget: text, required: false }
+          - name: hero
+            label: Hero
+            widget: object
+            fields:
+              - { name: headline, label: Headline }
+              - { name: subheadline, label: Subheadline, widget: text, required: false }
+              - { name: image, label: Background image, widget: image, required: false }
+              - { name: image_alt, label: Image description (for screen readers), required: false }
+              - { name: cta_label, label: Button text, required: false }
+              - { name: cta_link, label: Button link, required: false }
+          - name: services
+            label: Services
+            widget: list
+            required: false
+            fields:
+              - { name: name, label: Service name }
+              - { name: summary, label: Summary, widget: text, required: false }
+          - { name: body, label: Intro text, widget: richtext }
+      - name: services
+        label: Services page
+        file: src/content/pages/services.md
+        fields:
+          - { name: title, label: Page title }
+          - { name: description, label: Search engine description, widget: text, required: false }
+          - { name: body, label: Page text, widget: richtext }
+      - name: not-found
+        label: Page not found (404)
+        file: src/content/pages/not-found.md
+        fields:
+          - { name: title, label: Heading }
+          - { name: description, label: Search engine description, widget: text, required: false }
+          - { name: body, label: Message, widget: richtext }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: Business details
+        file: src/content/settings/site.yml
+        fields:
+          - { name: business_name, label: Business name }
+          - { name: tagline, label: Tagline, required: false }
+          - { name: phone, label: Phone, required: false }
+          - { name: email, label: Email, required: false }
+          - { name: service_area, label: Service area, required: false }
+          - { name: footer_note, label: Footer note, widget: text, required: false }
