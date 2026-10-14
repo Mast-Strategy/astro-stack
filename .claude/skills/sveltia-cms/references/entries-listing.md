@@ -1,0 +1,2405 @@
+# Entry Collections: Listings, Views and Operations
+
+How entries appear and behave in the content library: summaries, thumbnails, index files, sorting, grouping, filtering, reordering, and creation and deletion controls.
+
+Generated from the Sveltia CMS documentation. Do not edit by hand.
+
+## Entry Operations
+
+Sveltia CMS provides options to control entry creation, deletion and duplication, limit the number of entries, make content read-only, hide collections from the interface, and let editors reorder entries manually.
+
+### Disabling Creation and Deletion
+
+You can disable entry creation and deletion by setting the `create` option to `false` and the `delete` option to `false` in the collection definition. This is useful for collections where entries are managed programmatically or through other means, and you don’t want editors to create or delete entries.
+
+```yaml [YAML]{5-6}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    create: false
+    delete: false
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5-6}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+create = false
+delete = false
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7-8}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "create": false,
+      "delete": false,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7-8}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      create: false,
+      delete: false,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+**Breaking change from Netlify/Decap CMS**
+
+In Sveltia CMS, the `create` option for entry collections defaults to `true` because, in 99.99% of cases, users want to create new entries and adding `create: true` to every collection is redundant. To disable entry creation, set `create: false` explicitly.
+
+### Disabling Duplication
+
+You can disable entry duplication by setting the `duplicate` option to `false` in the collection definition. This is useful for collections where entries should not be duplicated, such as unique content types.
+
+When the `duplicate` option is set to `false`, the “Duplicate” button will be disabled in the Sveltia CMS interface, preventing users from creating duplicate entries.
+
+```yaml [YAML]{5}
+collections:
+  - name: products
+    label: Products
+    folder: /content/products
+    duplicate: false
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "products"
+label = "Products"
+folder = "/content/products"
+duplicate = false
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "products",
+      "label": "Products",
+      "folder": "/content/products",
+      "duplicate": false
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "products",
+      label: "Products",
+      folder: "/content/products",
+      duplicate: false,
+    },
+  ],
+}
+```
+
+### Limiting Entry Count
+
+You can limit the number of entries in an entry collection using the `limit` option. This is useful for collections where you want to restrict the number of items, such as featured articles or top products.
+
+```yaml [YAML]{5}
+collections:
+  - name: featured_articles
+    label: Featured Articles
+    folder: /content/featured_articles
+    limit: 5
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "featured_articles"
+label = "Featured Articles"
+folder = "/content/featured_articles"
+limit = 5
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "featured_articles",
+      "label": "Featured Articles",
+      "folder": "/content/featured_articles",
+      "limit": 5,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "featured_articles",
+      label: "Featured Articles",
+      folder: "/content/featured_articles",
+      limit: 5,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+With the above configuration, editors can only create up to 5 entries in the `featured_articles` collection. Once the limit is reached, the “Create new” button will be disabled in the Sveltia CMS interface.
+
+The collection’s [index file](https://sveltiacms.app/en/docs/collections/entries/listings#managing-hugo-s-special-index-file) doesn’t take up a slot. It stands for the collection’s own page rather than for one of the entries in it, so a collection with `limit: 5` and an `index_file` holds its index file plus 5 entries.
+
+### Making Content Read-Only
+
+You can make content read-only with the `readonly` option. Editors can still browse, search and view read-only content, including its preview, but they can’t change it. The option can be set at three levels:
+
+- **Globally**: At the top level of the configuration, `readonly: true` puts the whole CMS in read-only mode. This is handy while your site is under maintenance or being migrated, when editors shouldn’t write to the repository.
+- **Collection**: On an entry collection, a file collection or an [asset collection](https://sveltiacms.app/en/docs/media/internal#asset-collections), `readonly: true` locks that collection only.
+- **File**: On a file in a file collection, or on a [singleton](https://sveltiacms.app/en/docs/collections/singletons), `readonly: true` locks that file only, while the other files stay editable.
+
+```yaml [YAML]{5}
+collections:
+  - name: archive
+    label: Archive
+    folder: /content/archive
+    readonly: true
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "archive"
+label = "Archive"
+folder = "/content/archive"
+readonly = true
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "archive",
+      "label": "Archive",
+      "folder": "/content/archive",
+      "readonly": true,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "archive",
+      label: "Archive",
+      folder: "/content/archive",
+      readonly: true,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+To put the whole CMS in read-only mode, add the option to the top level instead:
+
+```yaml [YAML]
+readonly: true
+```
+
+```toml [TOML]
+readonly = true
+```
+
+```json [JSON]
+{
+  "readonly": true
+}
+```
+
+```js [JavaScript]
+{
+  readonly: true,
+}
+```
+
+A read-only level locks everything below it, and a lower level can’t opt out with `readonly: false`. For example, while the whole CMS is read-only, every collection and file is read-only as well.
+
+For read-only content, Sveltia CMS:
+
+- Shows a message at the top of the entry list, the Content Editor and the Asset Library, saying that the content can be viewed but not changed. When the whole CMS is read-only, the message says so instead.
+- Disables creating, duplicating, deleting and reordering entries, including from the global Create menu and the **Add** button of a Relation field that [creates related entries](https://sveltiacms.app/en/docs/fields/relation#creating-related-entries). The Create menu button itself is disabled when nothing can be created, as in read-only mode.
+- Opens entries and files with every field locked. The Save button, the slug and parent folder editors, the translation and copy options, and the reset options are not available.
+- Hides the Editorial Workflow controls for the entry, so it can’t be moved through the review stages, published or discarded.
+- Disables uploading, replacing, editing, renaming and deleting assets in the media folders of the read-only collection or file, as well as creating, renaming and deleting subfolders there. The global media folder is only read-only along with the whole CMS.
+
+Read-only entries also stay intact when other content changes. Sveltia CMS normally updates the entries that refer to an entry or asset when it’s renamed or deleted, but it can’t update a read-only entry. Instead, it refuses to delete an entry or asset that a read-only entry refers to, and to rename such an entry or asset, and tells the editor which read-only entries are in the way.
+
+**Not a security measure**
+
+The `readonly` option only affects the Sveltia CMS interface. It doesn’t stop anyone with write access to the repository from changing the content through Git or the Git hosting service. Use your Git host’s permissions, such as branch protection rules, to restrict write access.
+
+### Hiding the Collection
+
+You can hide an entry collection from the Sveltia CMS interface using the `hide` option. This is useful for collections that are managed programmatically or through other means, and you don’t want editors to see or modify them.
+
+```yaml [YAML]{5}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    hide: true
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+hide = true
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "hide": true,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      hide: true,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+When the `hide` option is set to `true`, the collection will not appear in the Sveltia CMS interface, and editors will not be able to access or modify its entries. Its entries are also left out of the global search results and of the list of entries using an asset in the [Asset Library](https://sveltiacms.app/en/docs/ui/asset-library).
+
+### Reordering Entries
+
+When the `reorder` option is set to `true`, Sveltia CMS enables manual reordering of entries in the listing view. This is useful for collections where the order of the entries matters, such as a list of featured products or a custom navigation menu.
+
+With this option enabled, users can reorder entries by dragging and dropping them or using the arrow buttons.
+
+In a [single-file collection](https://sveltiacms.app/en/docs/collections/entries/single-file), the entries can always be reordered without this option, which can’t be used there. The order of the objects in the array is the order of the entries, so no `order` field is written.
+
+```yaml [YAML]{5}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    reorder: true
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+reorder = true
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "reorder": true,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      reorder: true,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+By default, orders are saved in an additional property named `order` in each entry’s data, starting from `1`. However, you can customize this setting by providing an object with a `key` property that specifies a different field name for storing the order value. For example, to use the `weight` field for [Hugo](https://gohugo.io/methods/page/weight/) or [Zola](https://www.getzola.org/documentation/content/section/#weight), configure it like this:
+
+```yaml [YAML]{5-6}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    reorder:
+      key: weight
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+reorder = { key = "weight" }
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "reorder": { "key": "weight" },
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      reorder: { key: "weight" },
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+#### Reordering Within Groups
+
+Entering reorder mode normally clears any active grouping, so the entry list becomes a single flat sequence. If the order value is only meaningful within a group — for example, articles ordered per category — you can instead keep the list grouped while reordering by adding a `group` property to the `reorder` option. Its value is the `name` of one of the collection’s [view groups](https://sveltiacms.app/en/docs/collections/entries/views#grouping):
+
+```yaml [YAML]{5-11}
+collections:
+  - name: articles
+    label: Articles
+    folder: /content/articles
+    reorder:
+      group: categories
+    view_groups:
+      groups:
+        - name: categories
+          label: Categories
+          field: category
+    fields:
+      - { name: title, label: Title }
+      - { name: category, label: Category }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5,7-10}
+[[collections]]
+name = "articles"
+label = "Articles"
+folder = "/content/articles"
+reorder = { group = "categories" }
+
+[[collections.view_groups.groups]]
+name = "categories"
+label = "Categories"
+field = "category"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "category"
+label = "Category"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7-10}
+{
+  "collections": [
+    {
+      "name": "articles",
+      "label": "Articles",
+      "folder": "/content/articles",
+      "reorder": { "group": "categories" },
+      "view_groups": {
+        "groups": [{ "name": "categories", "label": "Categories", "field": "category" }]
+      },
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "category", "label": "Category" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7-10}
+{
+  collections: [
+    {
+      name: "articles",
+      label: "Articles",
+      folder: "/content/articles",
+      reorder: { group: "categories" },
+      view_groups: {
+        groups: [{ name: "categories", label: "Categories", field: "category" }],
+      },
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "category", label: "Category" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+With the above configuration, the entry list is grouped by `category` whenever a user enters reorder mode, and entries can only be dragged within their own group. Dropping an entry into a different group is rejected, because that would not change the `category` field that determines which group it belongs to.
+
+A few things to keep in mind:
+
+- The group is referenced by `name`, so the view group must have one. The `name` property is required in the extended syntax shown above, and can also be added to individual entries in the plain array syntax.
+- The configured group replaces whatever grouping the user has selected in the Group menu. Their own selection is restored once they leave reorder mode.
+- Order values are still assigned as a single sequence starting from `1`, numbered group by group. They do not restart at `1` in each group, so the first entry of the second group continues from where the first group ended.
+- If the named group is not defined in `view_groups`, Sveltia CMS raises a configuration error on startup.
+
+### Bulk Editing Entries
+
+When the `bulk_edit` option is set to `true`, users can change the simple fields of many entries at once in a spreadsheet-like table, instead of opening and saving each entry one by one. This is useful for chores like turning a `draft` flag on or off, moving posts to another category or fixing titles across a collection.
+
+```yaml [YAML]{5}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    bulk_edit: true
+    fields:
+      - { name: title, label: Title }
+      - { name: draft, label: Draft, widget: boolean }
+      - { name: category, label: Category, widget: select, options: [news, blog] }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+bulk_edit = true
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "draft"
+label = "Draft"
+widget = "boolean"
+
+[[collections.fields]]
+name = "category"
+label = "Category"
+widget = "select"
+options = ["news", "blog"]
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "bulk_edit": true,
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "draft", "label": "Draft", "widget": "boolean" },
+        { "name": "category", "label": "Category", "widget": "select", "options": ["news", "blog"] },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      bulk_edit: true,
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "draft", label: "Draft", widget: "boolean" },
+        { name: "category", label: "Category", widget: "select", options: ["news", "blog"] },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+With this option enabled, an **Edit** button appears in the collection toolbar. Clicking it turns the entry list into a table with a row for each entry and a column for each field that can be edited in bulk, holding the same control as the content editor: a text box, a switch, a dropdown list, a date picker and so on. The entry titles stay in view as the table is scrolled sideways. In the example above, the table has Title, Draft and Category columns; the Body field is left out, as a rich text editor doesn’t fit in a table cell.
+
+The toolbar shows how many values have been changed, and the changed cells are highlighted. Click **Save** to write all the changes in a single commit, or **Cancel** to discard them; you’re asked to confirm if there are unsaved changes.
+
+The table lists the entries shown before clicking **Edit**, in the same order and groups. To edit only some of the entries, such as the posts in one category, [filter](https://sveltiacms.app/en/docs/collections/entries/views#filtering) the list first. The sorting, filtering and grouping menus are hidden while editing, so the rows stay where they are.
+
+#### Choosing the Fields
+
+By default, every field that can be edited in bulk becomes a column, in the configured order. To show only some of them, or in a different order, provide an object with a `fields` property listing the field names instead:
+
+```yaml [YAML]{5-6}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    bulk_edit:
+      fields: [draft, title]
+    fields:
+      - { name: title, label: Title }
+      - { name: draft, label: Draft, widget: boolean }
+      - { name: category, label: Category, widget: select, options: [news, blog] }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+bulk_edit = { fields = ["draft", "title"] }
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "draft"
+label = "Draft"
+widget = "boolean"
+
+[[collections.fields]]
+name = "category"
+label = "Category"
+widget = "select"
+options = ["news", "blog"]
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "bulk_edit": { "fields": ["draft", "title"] },
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "draft", "label": "Draft", "widget": "boolean" },
+        { "name": "category", "label": "Category", "widget": "select", "options": ["news", "blog"] },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      bulk_edit: { fields: ["draft", "title"] },
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "draft", label: "Draft", widget: "boolean" },
+        { name: "category", label: "Category", widget: "select", options: ["news", "blog"] },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+If a listed field doesn’t exist at the top level of the collection, or can’t be edited in bulk, Sveltia CMS raises a configuration error on startup.
+
+#### Supported Fields
+
+Only a top-level field holding a single simple value can be edited in bulk — the same field types as an [editor component in the inline mode](https://sveltiacms.app/en/docs/api/editor-components#status-select-inline-mode):
+
+- [Boolean](https://sveltiacms.app/en/docs/fields/boolean)
+- [Color](https://sveltiacms.app/en/docs/fields/color)
+- [DateTime](https://sveltiacms.app/en/docs/fields/datetime)
+- [Number](https://sveltiacms.app/en/docs/fields/number)
+- [Relation](https://sveltiacms.app/en/docs/fields/relation)
+- [Select](https://sveltiacms.app/en/docs/fields/select)
+- [String](https://sveltiacms.app/en/docs/fields/string)
+
+A field of these types is still left out if it has the `multiple` or `readonly` option enabled, or if its value is set automatically on save: a Number field with the `auto_increment` option or a DateTime field with the `auto_now` option. Other fields, such as Text, Rich Text, List and Object fields, can only be edited in the content editor.
+
+#### How Changes Are Saved
+
+- The values are checked against the field options, such as `required`, `pattern`, `min` and `max`, before anything is saved, as they are in the content editor. An invalid value is highlighted with an error message, and nothing is saved until it’s fixed. A `unique` field is checked against all the pending changes together, so two entries can swap their values.
+- Only the entries with changed values are saved. A DateTime field with the `auto_now` option is updated in each of them, as it would be in the content editor.
+- With [i18n](https://sveltiacms.app/en/docs/i18n) enabled, the table shows the values in the default locale. A field with `i18n: duplicate` gets the new value in every locale, while a translatable field only changes in the default locale; the other locales can be updated in the content editor.
+- The changes are applied to the entries as they are in the repository when you click **Save**, so a change someone else has made to another field of the same entry in the meantime is kept.
+- The collection’s [index file](https://sveltiacms.app/en/docs/collections/entries/listings#managing-hugo-s-special-index-file) and [read-only](#making-content-read-only) entries are not listed.
+
+Like [reordering](#reordering-entries), bulk editing writes the changes to the configured branch directly, even if [Editorial Workflow](https://sveltiacms.app/en/docs/workflows/editorial) is enabled, as it doesn’t go through the review of each entry. For the same reason, the **Edit** button is not available to [Open Authoring](https://sveltiacms.app/en/docs/workflows/open) contributors, or to users who can’t push to the branch. An entry with unpublished changes is edited in its published version, so publishing those changes later may revert the bulk edit. The button is also not available on small screens, where a table doesn’t fit.
+
+Source: https://sveltiacms.app/en/docs/collections/entries/operations
+
+---
+
+## Entry Listings
+
+After creating an entry collection, you might want to customize how entries are displayed in the Sveltia CMS interface. The following options allow you to control various aspects of entry listings.
+
+### Summaries
+
+By default, Sveltia CMS uses the `title` field (or a field defined with the [`identifier_field` option](https://sveltiacms.app/en/docs/collections/entries/slugs#specifying-an-identifier-field)) as the summary for each entry in the listing view. If the field is empty or missing, the `title`, `name` or `label` field is used instead, whichever has a value first.
+
+Sometimes entries might only have a `body` field without a `title` field. In such cases, Sveltia CMS will look for a header in the Markdown body field, if it exists, or use the entry slug as a fallback to ensure that the summary is never empty. This behavior supports typical Markdown-based setups like [VitePress](https://sveltiacms.app/en/docs/frameworks/vitepress) and [Docusaurus](https://sveltiacms.app/en/docs/frameworks/docusaurus).
+
+You can customize the summary displayed for each entry using the `summary` option. This option accepts a string with template tags that will be replaced with entry-specific values when generating the summary. For example, to display both the title and date of each entry in the summary, you can use the following configuration:
+
+```yaml [YAML]
+summary: '{{title}} ({{date}})'
+```
+
+```toml [TOML]
+summary = "{{title}} ({{date}})"
+```
+
+```json [JSON]
+{
+  "summary": "{{title}} ({{date}})"
+}
+```
+
+```js [JavaScript]
+{
+  summary: "{{title}} ({{date}})",
+}
+```
+
+Basic Markdown syntax is supported in the `summary` option, including bold, italics and inline code. For example:
+
+```yaml [YAML]
+summary: '**{{title}}** - _{{date}}_ `{{status}}`'
+```
+
+```toml [TOML]
+summary = "**{{title}}** - _{{date}}_ `{{status}}`"
+```
+
+```json [JSON]
+{
+  "summary": "**{{title}}** - _{{date}}_ `{{status}}`"
+}
+```
+
+```js [JavaScript]
+{
+  summary: "**{{title}}** - _{{date}}_ `{{status}}`",
+}
+```
+
+You can use [string transformations](https://sveltiacms.app/en/docs/string-transformations) with these template tags as well. For example:
+
+```yaml [YAML]
+summary: "{{title}} - {{date | date('DD MMM YYYY')}} {{published | ternary('', '(draft)')}}"
+```
+
+```toml [TOML]
+summary = "{{title}} - {{date | date('DD MMM YYYY')}} {{published | ternary('', '(draft)')}}"
+```
+
+```json [JSON]
+{
+  "summary": "{{title}} - {{date | date('DD MMM YYYY')}} {{published | ternary('', '(draft)')}}"
+}
+```
+
+```js [JavaScript]
+{
+  summary: "{{title}} - {{date | date('DD MMM YYYY')}} {{published | ternary('', '(draft)')}}",
+}
+```
+
+The following template tags are supported in the `summary` option, in addition to [slug template tags](https://sveltiacms.app/en/docs/collections/entries/slugs#slug-template-tags) except date-related ones:
+
+- `{{dirname}}`: The name of the directory containing the entry file, relative to the collection `folder`. It never includes the locale folder of an [i18n structure](https://sveltiacms.app/en/docs/i18n/structures) with a folder per locale, so it’s the same in every locale.
+- `{{filename}}`: The entry file name without the extension.
+- `{{extension}}`: The entry file extension.
+- `{{commit_author}}`: The last commit author of the entry file from Git history (if available).
+- `{{commit_date}}`: The last commit date of the entry file from Git history (if available).
+- `{{locales}}`: The enabled locales for the entry when using [i18n support](https://sveltiacms.app/en/docs/i18n).
+
+**Known issue**
+
+Git commit information is not available with the GitLab backend due to API limitations.
+
+### Thumbnails
+
+By default, Sveltia CMS automatically looks for any non-nested, non-empty Image or File field in the entry to use as a thumbnail in the entry listing view. However, you can customize this behavior using the `thumbnail` option.
+
+```yaml [YAML]{5}
+collections:
+  - name: posts
+    label: Blog Posts
+    folder: /content/posts
+    thumbnail: featuredImage
+    fields:
+      - { name: title, label: Title }
+      - { name: featuredImage, label: Featured Image, widget: image }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog Posts"
+folder = "/content/posts"
+thumbnail = "featuredImage"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "featuredImage"
+label = "Featured Image"
+widget = "image"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog Posts",
+      "folder": "/content/posts",
+      "thumbnail": "featuredImage",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "featuredImage", "label": "Featured Image", "widget": "image" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog Posts",
+      folder: "/content/posts",
+      thumbnail: "featuredImage",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "featuredImage", label: "Featured Image", widget: "image" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+The `thumbnail` option can take a string or an array of strings representing the field names to be used as thumbnails. The first field that contains a valid image will be used as the thumbnail. For example:
+
+```yaml [YAML]
+thumbnail: [thumbnailImage, coverImage]
+```
+
+```toml [TOML]
+thumbnail = ["thumbnailImage", "coverImage"]
+```
+
+```json [JSON]
+{
+  "thumbnail": ["thumbnailImage", "coverImage"]
+}
+```
+
+```js [JavaScript]
+{
+  thumbnail: ["thumbnailImage", "coverImage"],
+}
+```
+
+A nested field can be specified using dot notation, e.g. `heroImage.src`. A wildcard in the field name is also supported, e.g. `images.*.src`, to target images in a list field.
+
+#### Thumbnail Paths
+
+If your thumbnails are stored at predictable locations rather than referenced by a field, you can specify a file path instead of a field name. A value starting with a slash is treated as a path, which is resolved in the same way as an Image field value, so it’s typically a path under your [`public_folder`](https://sveltiacms.app/en/docs/media/internal). This avoids adding an extra field to every entry just to hold a thumbnail path that can be derived from the entry itself.
+
+The path can contain the same template tags as the [`preview_path` option](https://sveltiacms.app/en/docs/collections/entries/previews#preview-paths), including `{{slug}}`, `{{dirname}}`, `{{filename}}`, date and time tags, and field values. The date and time tags are based on the field specified with the `preview_path_date_field` option, or the first DateTime field in the collection. [String transformations](https://sveltiacms.app/en/docs/string-transformations) can be used as well. For example:
+
+```yaml [YAML]
+thumbnail: '/images/thumbnails/{{slug}}.webp'
+```
+
+```toml [TOML]
+thumbnail = "/images/thumbnails/{{slug}}.webp"
+```
+
+```json [JSON]
+{
+  "thumbnail": "/images/thumbnails/{{slug}}.webp"
+}
+```
+
+```js [JavaScript]
+{
+  thumbnail: "/images/thumbnails/{{slug}}.webp",
+}
+```
+
+Paths and field names can be combined in an array. They are tried in order, so the example below uses the `coverImage` field when no file exists at the given path:
+
+```yaml [YAML]
+thumbnail: ['/images/thumbnails/{{slug}}.webp', coverImage]
+```
+
+```toml [TOML]
+thumbnail = ["/images/thumbnails/{{slug}}.webp", "coverImage"]
+```
+
+```json [JSON]
+{
+  "thumbnail": ["/images/thumbnails/{{slug}}.webp", "coverImage"]
+}
+```
+
+```js [JavaScript]
+{
+  thumbnail: ["/images/thumbnails/{{slug}}.webp", "coverImage"],
+}
+```
+
+The template tags are filled with the values of the default locale. If a tag cannot be resolved, for example because the field it refers to is empty, the path is skipped and the next candidate is tried. A relative path is not supported, because a value without a leading slash is treated as a field name.
+
+#### Disabling Thumbnails
+
+Occasionally, you may not have suitable images for thumbnails. For example, your images may have subtle differences or varied aspect ratios. In that case, you can disable the thumbnail feature by setting the `thumbnail` option to `false` or an empty array:
+
+```yaml [YAML]
+thumbnail: false
+```
+
+```toml [TOML]
+thumbnail = false
+```
+
+```json [JSON]
+{
+  "thumbnail": false
+}
+```
+
+```js [JavaScript]
+{
+  thumbnail: false,
+}
+```
+
+### Including and Excluding Entries
+
+Sometimes, you may want to include or exclude specific entries from being displayed in the Sveltia CMS interface. Sveltia CMS provides options to manage this.
+
+#### Managing Hugo’s Special Index File
+
+By default, Hugo’s [special `_index.md` file](https://gohugo.io/content-management/organization/#index-pages-_indexmd) are hidden in a folder collection unless the `path` option is configured to end with `_index` and the `extension` is set to `md`. You have to create a [file collection](https://sveltiacms.app/en/docs/collections/files) to manage the file, since it usually comes with a different set of fields than regular entry fields.
+
+The `index_file` option allows you to include and manage the special index file within the same folder collection. This way, editors can easily access and edit the index file alongside regular entries.
+
+```yaml [YAML]{10-13}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: /content/posts
+    fields: # Fields for regular entries
+      - { name: title, label: Title }
+      - { name: date, label: Published Date, widget: datetime }
+      - { name: description, label: Description }
+      - { name: body, label: Body, widget: richtext }
+    index_file:
+      fields: # Fields for the index file
+        - { name: title, label: Title }
+        - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{24-33}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "/content/posts"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "date"
+label = "Published Date"
+widget = "datetime"
+
+[[collections.fields]]
+name = "description"
+label = "Description"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+
+[collections.index_file]
+
+[[collections.index_file.fields]]
+name = "title"
+label = "Title"
+
+[[collections.index_file.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{13-18}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "/content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "date", "label": "Published Date", "widget": "datetime" },
+        { "name": "description", "label": "Description" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "index_file": {
+        "fields": [
+          { "name": "title", "label": "Title" },
+          { "name": "body", "label": "Body", "widget": "richtext" }
+        ]
+      }
+    }
+  ]
+}
+```
+
+```js [JavaScript]{13-18}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "/content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "date", label: "Published Date", widget: "datetime" },
+        { name: "description", label: "Description" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      index_file: {
+        fields: [
+          { name: "title", label: "Title" },
+          { name: "body", label: "Body", widget: "richtext" },
+        ],
+      },
+    },
+  ],
+}
+```
+
+Here is an example of full customization. All options are optional.
+
+```yaml [YAML]
+index_file:
+  name: _index # File name without a locale or extension. Default: _index
+  extension: md # File extension. Default: the collection’s extension
+  format: frontmatter # File format. Default: detected from the extension, or the collection’s format
+  label: Index File # Human-readable file label. Default: Index File
+  icon: home # Material Symbols icon name. Default: home
+  fields: # Fields for the index file. If omitted, regular entry fields are used
+    ...
+  editor:
+    preview: false # Hide the preview pane if needed. Default: true
+```
+
+```toml [TOML]
+[index_file]
+name = "_index"
+extension = "md"
+format = "frontmatter"
+label = "Index File"
+icon = "home"
+# fields would be defined as [[index_file.fields]] elements
+# editor configuration
+[index_file.editor]
+preview = false
+```
+
+```json [JSON]
+{
+  "index_file": {
+    "name": "_index",
+    "extension": "md",
+    "format": "frontmatter",
+    "label": "Index File",
+    "icon": "home",
+    "fields": [],
+    "editor": {
+      "preview": false
+    }
+  }
+}
+```
+
+```js [JavaScript]
+{
+  index_file: {
+    name: "_index",
+    extension: "md",
+    format: "frontmatter",
+    label: "Index File",
+    icon: "home",
+    fields: [],
+    editor: {
+      preview: false,
+    },
+  },
+}
+```
+
+If your regular entry fields and index file fields are identical and you don’t need any options, simply write:
+
+```yaml [YAML]
+index_file: true
+```
+
+```toml [TOML]
+index_file = true
+```
+
+```json [JSON]
+{
+  "index_file": true
+}
+```
+
+```js [JavaScript]
+{
+  index_file: true,
+}
+```
+
+Note that the special index file is placed right under the `folder`, regardless of the collection’s [`path` option](https://sveltiacms.app/en/docs/collections/entries/slugs#using-subfolders). For example, if the `path` is `{{year}}/{{slug}}`, a regular entry would be saved as `content/posts/2025/title.md`, but the index file remains at `content/posts/_index.md`.
+
+For a multilingual Hugo site using [translation by content directory](https://gohugo.io/content-management/multilingual/#translation-by-content-directory), where the section folders sit below the locale folders, put the [`{{locale}}` placeholder](https://sveltiacms.app/en/docs/i18n/structures#custom-locale-folder-placement) in the `folder` option, e.g. `content/{{locale}}/posts`. The index file then lands in each locale’s section folder, e.g. `content/en/posts/_index.md`, rather than under the `content` folder.
+
+The index file is listed beside the regular entries, but it isn’t counted as one of them, because it stands for the collection’s own page rather than for something in it. It’s left out of the entry count shown next to the collection in the [collection list](https://sveltiacms.app/en/docs/ui/content-library#collection-list), and it doesn’t take up a slot in the collection’s [`limit`](https://sveltiacms.app/en/docs/collections/entries/operations#limiting-entry-count). A collection holding nothing but its index file therefore shows a count of `0`.
+
+Only the collection’s own index file is treated this way. When one collection’s `folder` contains another’s — a `pages` collection on `content` with a `posts` collection on `content/posts`, say — the inner collection’s `content/posts/_index.md` is an ordinary entry as far as the outer collection is concerned: the outer collection’s [`filter`](#filtering-entries) applies to it, and it’s counted like any other entry the filter lets through.
+
+##### Managing Eleventy’s Directory Data File
+
+The index file doesn’t have to be a Hugo `_index.md`: any file with a fixed name right under the collection folder can be one, in a format of its own. Eleventy’s [directory data file](https://www.11ty.dev/docs/data-template-dir/), for example, is a JSON (or YAML, if configured) file named after the folder, like `posts/posts.json`, that holds the data every Markdown entry in the folder inherits. Set the `name` and `extension` (or `format`) options to manage it beside the entries:
+
+```yaml [YAML]{9-10}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: content/posts
+    fields:
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+    index_file:
+      name: posts
+      extension: json
+      label: Posts Data
+      icon: description
+      fields:
+        - { name: layout, label: Layout }
+        - { name: tags, label: Tags, widget: list }
+```
+
+```toml [TOML]{16-17}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "content/posts"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+
+[collections.index_file]
+name = "posts"
+extension = "json"
+label = "Posts Data"
+icon = "description"
+
+[[collections.index_file.fields]]
+name = "layout"
+label = "Layout"
+
+[[collections.index_file.fields]]
+name = "tags"
+label = "Tags"
+widget = "list"
+```
+
+```json [JSON]{12-13}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "index_file": {
+        "name": "posts",
+        "extension": "json",
+        "label": "Posts Data",
+        "icon": "description",
+        "fields": [
+          { "name": "layout", "label": "Layout" },
+          { "name": "tags", "label": "Tags", "widget": "list" }
+        ]
+      }
+    }
+  ]
+}
+```
+
+```js [JavaScript]{12-13}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      index_file: {
+        name: "posts",
+        extension: "json",
+        label: "Posts Data",
+        icon: "description",
+        fields: [
+          { name: "layout", label: "Layout" },
+          { name: "tags", label: "Tags", widget: "list" },
+        ],
+      },
+    },
+  ],
+}
+```
+
+With this configuration, `content/posts/posts.json` is listed and edited as the collection’s index file, read and written as JSON, while `content/posts/*.md` are the regular entries. Other `.json` files in the folder are left alone. The `format` option works as it does for [the collection](https://sveltiacms.app/en/docs/collections/entries/formats): give it alone to have the extension follow, or give both when they don’t go together, e.g. `extension: md` with `format: toml-frontmatter`. The [front matter delimiters](https://sveltiacms.app/en/docs/collections/entries/formats#front-matter-delimiter), body field and other file options are shared with the entries.
+
+**Reserved Name**
+
+An index file with an extension of its own could sit beside an entry of the same name, like `posts/posts.md` next to `posts/posts.json`, but the two would be addressed the same way in the CMS. The index file’s name is therefore reserved: such an entry is left out of the collection, and a new entry whose slug would clash with it is renamed like any duplicate.
+
+#### Filtering Entries
+
+With the `filter` option, you can limit the entries displayed in the Sveltia CMS interface based on specific criteria. This is useful for collections where you want to show only a subset of entries, such as a specific language or category.
+
+This option takes an object with two properties:
+
+- `field`: The name of the field to filter by.
+- `value` or `pattern`: The value that the field must match for an entry to be included.
+  - The `value` property checks for exact matches, while the `pattern` property allows for regular expression matching.
+  - The `value` can be a single value or an array of values. If an array is provided, entries matching any of the values will be included. If `null` is provided as a value, entries where the field is not set will be included.
+  - The `pattern` property should be a string representing a valid regular expression. An entry where the field is not set never matches a pattern.
+
+The example below shows how to create two separate collections for English and French blog posts, filtering entries based on the `lang` field:
+
+```yaml [YAML]{5,13}
+collections:
+  - name: english-posts
+    label: English Posts
+    folder: /content/posts
+    filter: { field: lang, value: en }
+    fields:
+      - { name: lang, label: Language, widget: select, options: [en, fr] }
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+  - name: french-posts
+    label: French Posts
+    folder: /content/posts
+    filter: { field: lang, value: fr }
+    fields:
+      - { name: lang, label: Language, widget: select, options: [en, fr] }
+      - { name: title, label: Title }
+      - { name: body, label: Body, widget: richtext }
+```
+
+```toml [TOML]{5,26}
+[[collections]]
+name = "english-posts"
+label = "English Posts"
+folder = "/content/posts"
+filter = { field = "lang", value = "en" }
+
+[[collections.fields]]
+name = "lang"
+label = "Language"
+widget = "select"
+options = ["en", "fr"]
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+
+[[collections]]
+name = "french-posts"
+label = "French Posts"
+folder = "/content/posts"
+filter = { field = "lang", value = "fr" }
+
+[[collections.fields]]
+name = "lang"
+label = "Language"
+widget = "select"
+options = ["en", "fr"]
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{7,18}
+{
+  "collections": [
+    {
+      "name": "english-posts",
+      "label": "English Posts",
+      "folder": "/content/posts",
+      "filter": { "field": "lang", "value": "en" },
+      "fields": [
+        { "name": "lang", "label": "Language", "widget": "select", "options": ["en", "fr"] },
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    },
+    {
+      "name": "french-posts",
+      "label": "French Posts",
+      "folder": "/content/posts",
+      "filter": { "field": "lang", "value": "fr" },
+      "fields": [
+        { "name": "lang", "label": "Language", "widget": "select", "options": ["en", "fr"] },
+        { "name": "title", "label": "Title" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{7,18}
+{
+  collections: [
+    {
+      name: "english-posts",
+      label: "English Posts",
+      folder: "/content/posts",
+      filter: { field: "lang", value: "en" },
+      fields: [
+        { name: "lang", label: "Language", widget: "select", options: ["en", "fr"] },
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+    {
+      name: "french-posts",
+      label: "French Posts",
+      folder: "/content/posts",
+      filter: { field: "lang", value: "fr" },
+      fields: [
+        { name: "lang", label: "Language", widget: "select", options: ["en", "fr"] },
+        { name: "title", label: "Title" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+    },
+  ],
+}
+```
+
+Source: https://sveltiacms.app/en/docs/collections/entries/listings
+
+---
+
+## Entry Views
+
+Sveltia CMS provides several options to customize how entries are displayed in the listing view. Users can sort, group, and filter entries based on specific fields to improve navigation and organization.
+
+### Table View
+
+The entry list can be shown in three views: a table, a list and a grid of thumbnails. The table view is the default, until a user picks another view with the buttons in the toolbar. A collection opened before the table view was introduced keeps the view it was shown in then, usually the list view, until the user picks the table. It shows a column for each piece of information that tells the entries apart, such as the date, the author and the category, while the list view only shows the [entry summary](https://sveltiacms.app/en/docs/collections/entries/listings#summaries). The grid view is only available when the entries have [thumbnails](https://sveltiacms.app/en/docs/collections/entries/listings#thumbnails).
+
+The table view is shown on a large screen, where the columns fit. On a smaller screen, the list view is shown instead. In [reorder mode](https://sveltiacms.app/en/docs/collections/entries/operations#reordering-entries), the entries are always shown in a list.
+
+The table is read-only: click a row to open the entry, as in the list view. To change the values of many entries at once, use [bulk editing](https://sveltiacms.app/en/docs/collections/entries/operations#bulk-editing-entries).
+
+By default, the table shows the entry summary, followed by a column for each field the entries can be [sorted](#sorting) by, as they are the fields that tell the entries apart. The identifier field, usually `title`, is left out, as the summary already shows it. You can choose the columns with the `table_columns` option instead. It accepts a list of field names, which can include nested fields in dot notation like `author.name`, as well as the special keys `_summary` for the entry summary, `slug`, `commit_date` and `commit_author`. To give a column a header other than the field’s label, use an object with the `field` and `label` properties:
+
+```yaml [YAML]{11-15}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: /content/posts
+    fields:
+      - { name: title, label: Title }
+      - { name: date, label: Published Date, widget: datetime }
+      - { name: author, label: Author, widget: object, fields: [{ name: name, label: Name }] }
+      - { name: draft, label: Draft, widget: boolean }
+      - { name: body, label: Body, widget: richtext }
+    table_columns:
+      - title
+      - date
+      - { field: author.name, label: Author }
+      - draft
+```
+
+```toml [TOML]{5-10}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "/content/posts"
+table_columns = [
+  "title",
+  "date",
+  { field = "author.name", label = "Author" },
+  "draft",
+]
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "date"
+label = "Published Date"
+widget = "datetime"
+
+[[collections.fields]]
+name = "author"
+label = "Author"
+widget = "object"
+fields = [{ name = "name", label = "Name" }]
+
+[[collections.fields]]
+name = "draft"
+label = "Draft"
+widget = "boolean"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{14-19}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "/content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "date", "label": "Published Date", "widget": "datetime" },
+        { "name": "author", "label": "Author", "widget": "object", "fields": [{ "name": "name", "label": "Name" }] },
+        { "name": "draft", "label": "Draft", "widget": "boolean" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "table_columns": [
+        "title",
+        "date",
+        { "field": "author.name", "label": "Author" },
+        "draft"
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{14-19}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "/content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "date", label: "Published Date", widget: "datetime" },
+        { name: "author", label: "Author", widget: "object", fields: [{ name: "name", label: "Name" }] },
+        { name: "draft", label: "Draft", widget: "boolean" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      table_columns: [
+        "title",
+        "date",
+        { field: "author.name", label: "Author" },
+        "draft",
+      ],
+    },
+  ],
+}
+```
+
+A column can also show a template, written the same way as the [`summary` option](https://sveltiacms.app/en/docs/collections/entries/listings#summaries), with the same tags and [transformations](https://sveltiacms.app/en/docs/string-transformations). This lets the table show entry metadata such as `{{locales}}` for the enabled locales, `{{dirname}}`, `{{filename}}` and `{{extension}}`, or combine several values in one column:
+
+```yaml
+table_columns:
+  - title
+  - '{{locales}}'
+  - { field: '{{filename}}.{{extension}}', label: File }
+  - { field: "{{date | date('YYYY-MM-DD')}}", label: Published }
+```
+
+A template made of a single tag, such as `{{locales}}` or `{{commit_date}}`, gets a header named after it, and its column can be sorted if the tag is one of the [sortable fields](#sorting). Give a longer template a `label`, or its header shows the template itself.
+
+Each cell shows the field’s value the way a [summary template](https://sveltiacms.app/en/docs/collections/entries/listings#summaries) would: a date in the user’s format, a Select field’s option by its label, a Relation field’s referenced entry by its display value, a list as comma-separated values and a rich text field without its formatting. A Boolean field is shown as a check mark when it’s on. With [i18n](https://sveltiacms.app/en/docs/i18n) enabled, the values are taken from the default locale. If a listed field isn’t defined in the collection, Sveltia CMS raises a configuration error on startup.
+
+A column whose field is also one of the [sortable fields](#sorting) has a clickable header that sorts the entries by it, the same way the **Sort** menu does; click it again to reverse the order.
+
+**Static CMS compatibility**
+
+The `summary_fields` option of Static CMS, a list of field names where `summary` stands for the entry summary, is supported as an alias of `table_columns`. It’s ignored if `table_columns` is also defined.
+
+### Sorting
+
+By default, Sveltia CMS supports sorting by `title`, `name`, `date`, `author` and `description` fields if they exist in the collection, as well as by the [identifier field](https://sveltiacms.app/en/docs/collections/entries/slugs#specifying-an-identifier-field) if it’s set with the `identifier_field` option. If the `date` and `author` fields are not present, Sveltia CMS will look for commit date and author information from Git history (if available) to enable sorting by those fields.
+
+When the [`summary` option](https://sveltiacms.app/en/docs/collections/entries/listings#summaries) is defined for a collection, Sveltia CMS also enables sorting by entry summaries. This allows you to sort entries based on the customized summary content, which can include multiple fields and string transformations.
+
+When the [`reorder` option](https://sveltiacms.app/en/docs/collections/entries/operations#reordering-entries) is enabled for a collection, Sveltia CMS enables manual sorting of entries in the listing view. This allows users to drag and drop entries to reorder them as needed.
+
+You can customize the sortable fields using the `sortable_fields` option. It accepts an array of field names that you want to enable for sorting in the entry listing view. It also accepts the following special keys, which read entry metadata instead of a field:
+
+- `slug`: Sort entries by their slugs.
+- `commit_date`: Sort entries by the date of the last commit that modified the entry file.
+- `commit_author`: Sort entries by the author of the last commit that modified the entry file.
+
+The `commit_date` and `commit_author` keys are only shown when Git commit information is available for the collection’s entries; otherwise, they are ignored. Even with `sortable_fields` defined, Sveltia CMS adds them automatically when the information is available and the list doesn’t include `date` or `author`, respectively.
+
+Entries without a value for the sort field, such as an empty date, are always listed last, whether the order is ascending or descending and whatever the field type.
+
+The example below shows how to enable sorting by custom fields such as `category` and nested fields like `author.name`:
+
+```yaml [YAML]{16}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: /content/posts
+    fields:
+      - { name: title, label: Title }
+      - { name: published_date, label: Published Date, widget: datetime }
+      - {
+          name: author,
+          label: Author,
+          widget: object,
+          fields: [{ name: name, label: Name }, { name: email, label: Email }],
+        }
+      - { name: category, label: Category }
+      - { name: body, label: Body, widget: richtext }
+    sortable_fields: [title, published_date, author.name, category]
+```
+
+```toml [TOML]{5}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "/content/posts"
+sortable_fields = ["title", "published_date", "author.name", "category"]
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "published_date"
+label = "Published Date"
+widget = "datetime"
+
+[[collections.fields]]
+name = "author"
+label = "Author"
+widget = "object"
+
+[[collections.fields.fields]]
+name = "name"
+label = "Name"
+
+[[collections.fields.fields]]
+name = "email"
+label = "Email"
+
+[[collections.fields]]
+name = "category"
+label = "Category"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+```
+
+```json [JSON]{22}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "/content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "published_date", "label": "Published Date", "widget": "datetime" },
+        {
+          "name": "author",
+          "label": "Author",
+          "widget": "object",
+          "fields": [
+            { "name": "name", "label": "Name" },
+            { "name": "email", "label": "Email" }
+          ]
+        },
+        { "name": "category", "label": "Category" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "sortable_fields": ["title", "published_date", "author.name", "category"]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{17}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "/content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "published_date", label: "Published Date", widget: "datetime" },
+        { name: "author", label: "Author", widget: "object", fields: [
+          { name: "name", label: "Name" },
+          { name: "email", label: "Email" },
+        ] },
+        { name: "category", label: "Category" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      sortable_fields: ["title", "published_date", "author.name", "category"],
+    },
+  ],
+}
+```
+
+**Extended syntax**
+
+Sveltia CMS supports an extended syntax used in [Static CMS](https://staticjscms.netlify.app/docs/collection-overview#sortable-fields) to define a default sort field and direction. This is useful if you want entries to be sorted by a date field in descending order by default. Here is the same configuration using the extended syntax:
+
+```yaml
+sortable_fields:
+  fields: [title, published_date, author.name, category]
+  default:
+    field: published_date
+    direction: descending
+```
+
+The default direction is `ascending` if not specified.
+
+For backward compatibility with Static CMS, the `direction` option accepts title case values: `Ascending` and `Descending`. However, `None` is not supported and has the same effect as `ascending`.
+
+**Known issue**
+
+Git commit information is currently loaded only with the GitHub backend. With the GitLab and Gitea/Forgejo backends, it’s only available for entries saved during the current session, due to API limitations. It’s not available in the local workflow or with the Test backend.
+
+### Grouping
+
+The `view_groups` option allows you to group entries in the listing view based on specific field values. This is useful for organizing entries into categories or sections for easier navigation.
+
+The example below demonstrates how to group blog posts by their `draft` status and by the year extracted from the `date` field:
+
+```yaml [YAML]{10-15}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: /content/posts
+    fields:
+      - { name: title, label: Title }
+      - { name: date, label: Published Date, widget: datetime }
+      - { name: draft, label: Draft, widget: boolean }
+      - { name: body, label: Body, widget: richtext }
+    view_groups:
+      - label: Drafts
+        field: draft
+      - label: Year
+        field: date
+        pattern: '\d{4}'
+```
+
+```toml [TOML]{25-32}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "/content/posts"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "date"
+label = "Published Date"
+widget = "datetime"
+
+[[collections.fields]]
+name = "draft"
+label = "Draft"
+widget = "boolean"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+
+[[collections.view_groups]]
+label = "Drafts"
+field = "draft"
+
+[[collections.view_groups]]
+label = "Year"
+field = "date"
+pattern = "\\d{4}"
+```
+
+```json [JSON]{13-23}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "/content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "date", "label": "Published Date", "widget": "datetime" },
+        { "name": "draft", "label": "Draft", "widget": "boolean" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "view_groups": [
+        {
+          "label": "Drafts",
+          "field": "draft"
+        },
+        {
+          "label": "Year",
+          "field": "date",
+          "pattern": "\\d{4}"
+        }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{13-23}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "/content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "date", label: "Published Date", widget: "datetime" },
+        { name: "draft", label: "Draft", widget: "boolean" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      view_groups: [
+        {
+          label: "Drafts",
+          field: "draft",
+        },
+        {
+          label: "Year",
+          field: "date",
+          pattern: "\\d{4}",
+        },
+      ],
+    },
+  ],
+}
+```
+
+Without a `pattern` or a [comparison option](#grouping-by-a-comparison), entries are grouped by the field value itself, as with the `draft` group above. With a `pattern`, they are grouped by the part of the field value that matches it, such as the four-digit year of the `date` field.
+
+**Extended syntax**
+
+Sveltia CMS supports an extended syntax used in [Static CMS](https://staticjscms.netlify.app/docs/collection-overview#view-groups) to define a default group. Here is the same configuration using the extended syntax:
+
+```yaml
+view_groups:
+  groups:
+    - name: drafts
+      label: Drafts
+      field: draft
+    - name: year
+      label: Year
+      field: date
+      pattern: '\d{4}'
+  default: year
+```
+
+In this syntax, each group needs a `name`, so that the `default` option can refer to it. The `default` option has to be the `name` of one of the `groups`; any other name is reported as a config validation error on the login screen, as the collection would otherwise open ungrouped.
+
+To sort the Year group in descending order by date, you can add the `sortable_fields` property as described in the [Sorting](#sorting) section above:
+
+```yaml
+sortable_fields:
+  fields: [date, title]
+  default:
+    field: date
+    direction: descending
+```
+
+A named view group can also be used with the [`reorder` option](https://sveltiacms.app/en/docs/collections/entries/operations#reordering-within-groups) to let editors reorder entries within their own group.
+
+#### Grouping by a Comparison
+
+A view group can also split the entries by a comparison, using the same options as a [view filter](#comparing-values). The entries satisfying the condition are grouped under the group’s `label`, and the other entries under “Other”. For example, the following group lists the upcoming events first, followed by the past and undated ones:
+
+```yaml
+view_groups:
+  - label: Upcoming
+    field: date
+    gte: '{{today}}'
+```
+
+### Filtering
+
+The `view_filters` option allows you to define preset filters that editors can quickly apply to the entry listing view. This is useful for quickly accessing specific subsets of entries based on common criteria.
+
+```yaml [YAML]{11-20}
+collections:
+  - name: posts
+    label: Blog posts
+    folder: /content/posts
+    fields:
+      - { name: title, label: Title }
+      - { name: date, label: Published Date, widget: datetime }
+      - { name: draft, label: Draft, widget: boolean }
+      - { name: category, label: Category }
+      - { name: body, label: Body, widget: richtext }
+    view_filters:
+      - label: Drafts
+        field: draft
+        pattern: true
+      - label: Posts from 2024
+        field: date
+        pattern: '^2024'
+      - label: Travel or Food
+        field: category
+        pattern: travel|food
+```
+
+```toml [TOML]{29-42}
+[[collections]]
+name = "posts"
+label = "Blog posts"
+folder = "/content/posts"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "date"
+label = "Published Date"
+widget = "datetime"
+
+[[collections.fields]]
+name = "draft"
+label = "Draft"
+widget = "boolean"
+
+[[collections.fields]]
+name = "category"
+label = "Category"
+
+[[collections.fields]]
+name = "body"
+label = "Body"
+widget = "richtext"
+
+[[collections.view_filters]]
+label = "Drafts"
+field = "draft"
+pattern = "true"
+
+[[collections.view_filters]]
+label = "Posts from 2024"
+field = "date"
+pattern = "^2024"
+
+[[collections.view_filters]]
+label = "Travel or Food"
+field = "category"
+pattern = "travel|food"
+```
+
+```json [JSON]{14-30}
+{
+  "collections": [
+    {
+      "name": "posts",
+      "label": "Blog posts",
+      "folder": "/content/posts",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "date", "label": "Published Date", "widget": "datetime" },
+        { "name": "draft", "label": "Draft", "widget": "boolean" },
+        { "name": "category", "label": "Category" },
+        { "name": "body", "label": "Body", "widget": "richtext" }
+      ],
+      "view_filters": [
+        {
+          "label": "Drafts",
+          "field": "draft",
+          "pattern": "true"
+        },
+        {
+          "label": "Posts from 2024",
+          "field": "date",
+          "pattern": "^2024"
+        },
+        {
+          "label": "Travel or Food",
+          "field": "category",
+          "pattern": "travel|food"
+        }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{14-30}
+{
+  collections: [
+    {
+      name: "posts",
+      label: "Blog posts",
+      folder: "/content/posts",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "date", label: "Published Date", widget: "datetime" },
+        { name: "draft", label: "Draft", widget: "boolean" },
+        { name: "category", label: "Category" },
+        { name: "body", label: "Body", widget: "richtext" },
+      ],
+      view_filters: [
+        {
+          label: "Drafts",
+          field: "draft",
+          pattern: "true",
+        },
+        {
+          label: "Posts from 2024",
+          field: "date",
+          pattern: "^2024",
+        },
+        {
+          label: "Travel or Food",
+          field: "category",
+          pattern: "travel|food",
+        },
+      ],
+    },
+  ],
+}
+```
+
+**Extended syntax**
+
+Sveltia CMS supports an extended syntax used in [Static CMS](https://staticjscms.netlify.app/docs/collection-overview#view-filters) to define a default filter. Here is the same configuration using the extended syntax:
+
+```yaml
+view_filters:
+  filters:
+    - name: drafts
+      label: Drafts
+      field: draft
+      pattern: true
+    - name: posts_2024
+      label: Posts from 2024
+      field: date
+      pattern: '^2024'
+    - name: travel_or_food
+      label: Travel or Food
+      field: category
+      pattern: travel|food
+  default: drafts
+```
+
+In this syntax, each filter needs a `name`, so that the `default` option can refer to it. The `default` option has to be the `name` of one of the `filters`; any other name is reported as a config validation error on the login screen, as the collection would otherwise open unfiltered.
+
+#### Comparing Values
+
+A view filter can compare the field value with a given value instead of, or in addition to, matching a `pattern`. This makes it possible to filter entries by a date, such as upcoming and past events, or by a number, such as products above a certain price. The following options are available:
+
+| Option   | Description                                                                         |
+| -------- | ----------------------------------------------------------------------------------- |
+| `eq`     | The field value has to be equal to the given value.                                 |
+| `ne`     | The field value has to be different from the given value.                           |
+| `lt`     | The field value has to be less than the given value.                                |
+| `lte`    | The field value has to be less than or equal to the given value.                    |
+| `gt`     | The field value has to be greater than the given value.                             |
+| `gte`    | The field value has to be greater than or equal to the given value.                 |
+| `in`     | The field value has to be equal to one of the given values, defined as an array.    |
+| `not_in` | The field value has to be different from all the given values, defined as an array. |
+| `empty`  | The field value has to be empty (`true`) or not (`false`).                          |
+
+The value of a DateTime field is compared as a date, so the given value has to be in the same format as the field value, or one of the following template tags:
+
+| Tag                                                                        | Description                                                                                                                                                         |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{{now}}`                                                                  | The current date and time.                                                                                                                                          |
+| `{{today}}`                                                                | The current date in the `YYYY-MM-DD` format. Use this rather than `{{now}}` with a date-only field, so that an entry dated today is included in a `gte` comparison. |
+| `{{year}}`, `{{month}}`, `{{day}}`, `{{hour}}`, `{{minute}}`, `{{second}}` | The parts of the current date and time, which can also be used in a `pattern`, e.g. `^{{year}}` for the entries of this year.                                       |
+
+The tags are resolved in the user’s local time zone whenever the entry list is updated, and every minute while such a filter or group is applied, so a filter like “Upcoming events” keeps working without any change to the configuration.
+
+A number field value and a numeric given value are compared as numbers; any other value is compared as a string. An entry without a value for the field only matches `ne`, `not_in` and `empty: true`. When several options are defined for one filter, all of them have to be satisfied.
+
+The `empty` option tells the entries that have a value for the field from those that don’t. A value is empty if it’s `null`, an empty string or an empty list, if it’s an Object field whose subfields are all empty, or if the field is missing from the entry altogether — for example, because the field was added to the configuration after the entry was created. Use this rather than `eq` or `ne`, which can’t express a missing value in TOML, where there is no `null`:
+
+```yaml [YAML]
+view_filters:
+  - label: With author
+    field: author
+    empty: false
+  - label: Without author
+    field: author
+    empty: true
+```
+
+```toml [TOML]
+[[collections.view_filters]]
+label = "With author"
+field = "author"
+empty = false
+
+[[collections.view_filters]]
+label = "Without author"
+field = "author"
+empty = true
+```
+
+```json [JSON]
+{
+  "view_filters": [
+    { "label": "With author", "field": "author", "empty": false },
+    { "label": "Without author", "field": "author", "empty": true }
+  ]
+}
+```
+
+```js [JavaScript]
+{
+  view_filters: [
+    { label: "With author", field: "author", empty: false },
+    { label: "Without author", field: "author", empty: true },
+  ],
+}
+```
+
+The comparison options can also be used with the [extended syntax](#filtering) described above, for example to apply the “Upcoming” filter by default:
+
+```yaml
+view_filters:
+  filters:
+    - name: upcoming
+      label: Upcoming
+      field: date
+      gte: '{{today}}'
+    - name: past
+      label: Past
+      field: date
+      lt: '{{today}}'
+  default: upcoming
+```
+
+The example below defines the filters for a list of events:
+
+```yaml [YAML]{10-24}
+collections:
+  - name: events
+    label: Events
+    folder: /content/events
+    fields:
+      - { name: title, label: Title }
+      - { name: date, label: Date, widget: datetime, time_format: false }
+      - { name: capacity, label: Capacity, widget: number }
+      - { name: status, label: Status, widget: select, options: [scheduled, canceled] }
+    view_filters:
+      - label: Upcoming
+        field: date
+        gte: '{{today}}'
+      - label: Past
+        field: date
+        lt: '{{today}}'
+      - label: This year
+        field: date
+        pattern: '^{{year}}'
+      - label: Large venues
+        field: capacity
+        gte: 100
+      - label: Not canceled
+        field: status
+        ne: canceled
+```
+
+```toml [TOML]{28-51}
+[[collections]]
+name = "events"
+label = "Events"
+folder = "/content/events"
+
+[[collections.fields]]
+name = "title"
+label = "Title"
+
+[[collections.fields]]
+name = "date"
+label = "Date"
+widget = "datetime"
+time_format = false
+
+[[collections.fields]]
+name = "capacity"
+label = "Capacity"
+widget = "number"
+
+[[collections.fields]]
+name = "status"
+label = "Status"
+widget = "select"
+options = ["scheduled", "canceled"]
+
+[[collections.view_filters]]
+label = "Upcoming"
+field = "date"
+gte = "{{today}}"
+
+[[collections.view_filters]]
+label = "Past"
+field = "date"
+lt = "{{today}}"
+
+[[collections.view_filters]]
+label = "This year"
+field = "date"
+pattern = "^{{year}}"
+
+[[collections.view_filters]]
+label = "Large venues"
+field = "capacity"
+gte = 100
+
+[[collections.view_filters]]
+label = "Not canceled"
+field = "status"
+ne = "canceled"
+```
+
+```json [JSON]{13-39}
+{
+  "collections": [
+    {
+      "name": "events",
+      "label": "Events",
+      "folder": "/content/events",
+      "fields": [
+        { "name": "title", "label": "Title" },
+        { "name": "date", "label": "Date", "widget": "datetime", "time_format": false },
+        { "name": "capacity", "label": "Capacity", "widget": "number" },
+        { "name": "status", "label": "Status", "widget": "select", "options": ["scheduled", "canceled"] }
+      ],
+      "view_filters": [
+        {
+          "label": "Upcoming",
+          "field": "date",
+          "gte": "{{today}}"
+        },
+        {
+          "label": "Past",
+          "field": "date",
+          "lt": "{{today}}"
+        },
+        {
+          "label": "This year",
+          "field": "date",
+          "pattern": "^{{year}}"
+        },
+        {
+          "label": "Large venues",
+          "field": "capacity",
+          "gte": 100
+        },
+        {
+          "label": "Not canceled",
+          "field": "status",
+          "ne": "canceled"
+        }
+      ]
+    }
+  ]
+}
+```
+
+```js [JavaScript]{13-39}
+{
+  collections: [
+    {
+      name: "events",
+      label: "Events",
+      folder: "/content/events",
+      fields: [
+        { name: "title", label: "Title" },
+        { name: "date", label: "Date", widget: "datetime", time_format: false },
+        { name: "capacity", label: "Capacity", widget: "number" },
+        { name: "status", label: "Status", widget: "select", options: ["scheduled", "canceled"] },
+      ],
+      view_filters: [
+        {
+          label: "Upcoming",
+          field: "date",
+          gte: "{{today}}",
+        },
+        {
+          label: "Past",
+          field: "date",
+          lt: "{{today}}",
+        },
+        {
+          label: "This year",
+          field: "date",
+          pattern: "^{{year}}",
+        },
+        {
+          label: "Large venues",
+          field: "capacity",
+          gte: 100,
+        },
+        {
+          label: "Not canceled",
+          field: "status",
+          ne: "canceled",
+        },
+      ],
+    },
+  ],
+}
+```
+
+Source: https://sveltiacms.app/en/docs/collections/entries/views
