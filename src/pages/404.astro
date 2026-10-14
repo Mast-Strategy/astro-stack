@@ -1,0 +1,18 @@
+---
+import { getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const page = (await getEntry('pages', 'not-found'))!;
+const { Content } = await render(page);
+---
+
+<Layout title={page.data.title} description={page.data.description}>
+	<section class="mx-auto max-w-5xl px-4 py-24 text-center">
+		<p class="text-6xl font-bold text-orange-700">404</p>
+		<h1 class="mt-4 text-3xl font-bold">{page.data.title}</h1>
+		<div class="mx-auto mt-4 max-w-xl text-stone-600">
+			<Content />
+		</div>
+		<a href="/" class="mt-8 inline-block rounded bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700">Home</a>
+	</section>
+</Layout>
