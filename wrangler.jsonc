@@ -1,0 +1,12 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	// Must match the Worker name in the Cloudflare dashboard, or Workers Builds fails.
+	"name": "ia-stack-test",
+	"compatibility_date": "2026-10-14",
+	// Static-only site: no "main" Worker script and no Astro Cloudflare adapter.
+	"assets": {
+		"directory": "./dist",
+		// Serve dist/404.html with a real 404 status for unknown URLs.
+		"not_found_handling": "404-page"
+	}
+}
