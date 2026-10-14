@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-label="Stylized mountain ridge at sunset">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7c2d12"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#sky)"/>
+  <path d="M0 500 L0 330 L180 210 L320 300 L480 160 L650 290 L820 190 L1000 300 L1200 220 L1200 500 Z" fill="#1c1917"/>
+</svg>

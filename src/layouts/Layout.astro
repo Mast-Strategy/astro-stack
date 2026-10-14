@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+import { getEntry } from 'astro:content';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description } = Astro.props;
+const site = (await getEntry('settings', 'site'))!.data;
+const pageTitle = title === 'Home' ? site.business_name : `${title} | ${site.business_name}`;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle}</title>
+		{description && <meta name="description" content={description} />}
+	</head>
+	<body class="flex min-h-screen flex-col bg-stone-50 text-stone-900">
+		<header class="border-b border-stone-200 bg-white">
+			<div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+				<a href="/" class="font-bold text-orange-800">{site.business_name}</a>
+				<nav class="flex gap-4 text-sm">
+					<a href="/services/" class="hover:text-orange-800">Services</a>
+					{site.phone && <a href={`tel:${site.phone.replace(/[^\d+]/g, '')}`} class="hover:text-orange-800">{site.phone}</a>}
+				</nav>
+			</div>
+		</header>
+		<main class="flex-1">
+			<slot />
+		</main>
+		<footer class="border-t border-stone-200 bg-white text-sm text-stone-600">
+			<div class="mx-auto max-w-5xl space-y-1 px-4 py-6">
+				<p>{site.business_name}{site.service_area && ` · Serving ${site.service_area}`}</p>
+				{site.email && <p><a href={`mailto:${site.email}`} class="underline">{site.email}</a></p>}
+				{site.footer_note && <p>{site.footer_note}</p>}
+			</div>
+		</footer>
+	</body>
+</html>
