@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import { getEntry } from 'astro:content';
 import { isNonProduction } from '../lib/environment';
+import Analytics from '../components/Analytics.astro';
 
 interface Props {
 	title: string;
@@ -29,6 +30,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		{description && <meta name="description" content={description} />}
 		{!noindex && <link rel="canonical" href={canonical} />}
 		{(noindex || isNonProduction) && <meta name="robots" content="noindex, nofollow" />}
+		{/* Renders nothing until a vendor snippet is added as children. See "Analytics" in STAGING.md. */}
+		<Analytics />
 	</head>
 	<body>
 		<header>
