@@ -52,7 +52,8 @@ Placeholders used below:
 - [ ] Worker name: `<worker>` (same as `wrangler.jsonc`).
 - [ ] Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
 - [ ] If Cloudflare offers to add the `@astrojs/cloudflare` adapter or "set up automatically", **decline**. This site is plain static files and doesn't need it.
-- [ ] **Settings → Build → Branch control:** make sure **Enable Preview Builds** is ticked, so every branch gets a preview address.
+- [ ] Preview builds for other branches are usually on by default. If the dashboard has **Settings → Build → Branch control → Enable Preview Builds**, make sure it's ticked; newer dashboards may not show it.
+- [ ] Keep the `"previews": {}` line in `wrangler.jsonc`. Without it, every preview build fails with "missing a `previews` block".
 - [ ] Wait for the first build to finish (about a minute), then open `https://<worker>.<subdomain>.workers.dev`. The home page should load.
 
 ## 4. The CMS login helper (`sveltia-cms-auth`)

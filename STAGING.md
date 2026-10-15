@@ -112,5 +112,5 @@ GA4 sets cookies, so check whether the client needs a cookie notice and a privac
 These are Cloudflare or GitHub settings, not code:
 
 - **Protect previews with a login (optional):** Cloudflare Zero Trust → Access → add an application for the Worker's previews. Cloudflare can protect all previews in the account, one Worker's previews, or specific addresses.
-- **Turn on preview builds** if they're off: `<worker>` → **Settings** → **Build** → **Branch control** → **Enable Preview Builds**.
+- **Turn on preview builds** if they're off: `<worker>` → **Settings** → **Build** → **Branch control** → **Enable Preview Builds**. Newer dashboards may not show this setting; there, preview builds are on by default. Previews also need `"previews": {}` in `wrangler.jsonc`, which the starter already has.
 - **Require pull requests for `main`:** GitHub repo → **Settings** → **Branches** (or **Rules**) → protect `main`, require the CI check, block direct pushes. On a free organization this may only be available for public repos; check before relying on it.
