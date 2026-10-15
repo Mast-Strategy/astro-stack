@@ -1,43 +1,54 @@
-# Astro Starter Kit: Minimal
+# Astro + Sveltia CMS starter (Cloudflare Workers)
 
-```sh
-npm create astro@latest -- --template minimal
-```
+A design-neutral starting point for client websites. It provides the software stack, not a look:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- **Astro 7** builds the site into plain static files. **Tailwind v4** is installed but not used yet.
+- **Sveltia CMS** at `/admin/` lets the owner edit copy and images in the browser. Each save is a Git commit.
+- **Cloudflare Workers** hosts the files and rebuilds the site on every push to `main` (about a minute).
 
-## 🚀 Project Structure
+The example content (a home page, a 404 page and site settings) only shows how the pieces connect. Replace it for each client.
 
-Inside of your Astro project, you'll see the following folders and files:
+## How content gets to the page
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Every piece of editable copy goes through three places, and they must agree on field names:
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+1. **Content file** in `src/content/`: the words and image paths (e.g. `src/content/pages/home.md`).
+2. **CMS config** in `public/admin/config.yml`: which fields the owner sees in `/admin/`.
+3. **Schema** in `src/content.config.ts`: what Astro expects, so a missing or misnamed field fails the build instead of silently disappearing.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Templates in `src/pages/` and `src/layouts/` read the content files and never contain copy themselves.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Images for pages go in `src/content/pages/images/`. The schema's `image()` helper makes Astro produce resized WebP versions at build time. Files in `public/` are served exactly as uploaded.
 
-## 🧞 Commands
+## Starting a new client site
 
-All commands are run from the root of the project, from a terminal:
+Follow `STARTER-CHECKLIST.md` for the full account and hosting setup. The values that change per client:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| Value | Where | Set it to |
+|---|---|---|
+| Worker name | `"name"` in `wrangler.jsonc` (and `package.json`) | The Worker name in Cloudflare. Must match exactly. |
+| Repo | `backend.repo` in `public/admin/config.yml` | `<github-owner>/<repo-name>` |
+| Login helper | `backend.base_url` in `public/admin/config.yml` | `https://sveltia-cms-auth.<subdomain>.workers.dev` |
+| Allowed domains | `ALLOWED_DOMAINS` secret on the `sveltia-cms-auth` Worker in Cloudflare (not in this repo) | Every domain the CMS is used from: the `workers.dev` address plus the client's domain(s) |
+| Redirects | `public/_redirects` | 301s from the old site's URLs, plus one slash line per page |
 
-## 👀 Want to learn more?
+Where the design work goes:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- `src/layouts/Layout.astro`: the shared page shell (header, footer, fonts). It's deliberately unstyled.
+- `src/pages/`: one `.astro` file per page, plus `404.astro`.
+- `src/styles/global.css`: Tailwind theme (colours, fonts) for the client.
+- Any new editable text: add it to the content file, `config.yml` and `content.config.ts` together, then check `/admin/index.html` locally for errors on the sign-in screen.
+
+Leave these alone unless you mean to change the stack: `astro.config.mjs` (`trailingSlash: 'always'`), `wrangler.jsonc` (`html_handling`, `not_found_handling`) and `public/admin/index.html` (the pinned CMS version).
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `npm install` | Installs everything into this folder (nothing global) |
+| `npm run dev` | Local preview at `http://localhost:4321`; CMS at `/admin/index.html` |
+| `npm run build` | Builds the site into `dist/`. Run before every commit. |
+
+## Background
+
+`SPIKE-NOTES.md` is the record of the technical spike that proved this stack, including the setup problems found along the way.

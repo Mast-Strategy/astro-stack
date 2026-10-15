@@ -57,8 +57,10 @@ Astro 7.3.8 · Tailwind CSS v4 · Sveltia CMS 0.239.1 (pinned in `public/admin/`
 
 ## To do before this becomes the starter repo
 
-- [x] Move the remaining UI labels into content: the "Services" nav link, the 404 "Home" button, and the "Serving" prefix in the footer. Now "Menu links" and "Word before service area" in Site settings, and "Button text/link" on the 404 page.
-- [x] Image optimization: the hero image now lives in `src/content/pages/images` and goes through Astro's `image()` helper, so the build makes resized WebP versions. Images inserted into page text still go to `public/images` unoptimized.
+> **Update:** the starter was later made design-neutral. The client branding, services page and these labels were replaced by a minimal example. See `README.md`.
+
+- [x] Move the remaining UI labels into content: the "Services" nav link, the 404 "Home" button, and the "Serving" prefix in the footer.
+- [x] Image optimization: page images now live in `src/content/pages/images` and goes through Astro's `image()` helper, so the build makes resized WebP versions. Images inserted into page text still go to `public/images` unoptimized.
 - [x] Set a trailing-slash policy: Astro `trailingSlash: 'always'` plus `html_handling: force-trailing-slash`. How to add 301s is documented in `public/_redirects`.
 - [ ] Generate a 301 for each old Hostinger URL from a crawl of the old site (per client; see step 8 of `STARTER-CHECKLIST.md`).
 - [ ] Replace placeholder copy, phone number and email. Remove the "auto-deploy test 1" footer text and the test headline.
