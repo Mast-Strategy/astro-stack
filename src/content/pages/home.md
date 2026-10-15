@@ -2,7 +2,7 @@
 title: Home
 description: Wildfire mitigation services for Colorado property owners.
 hero:
-  headline: Protect your property before fire season
+  headline: I think it worked
   subheadline: Placeholder hero copy. Defensible space, home hardening and fuel reduction across Colorado.
   image: /images/hero.svg
   image_alt: Stylized mountain ridge at sunset
