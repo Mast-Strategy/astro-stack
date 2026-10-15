@@ -1,0 +1,13 @@
+---
+// Renders the analytics snippet passed in as children, but only on a production build
+// with PUBLIC_ANALYTICS_ID set. No vendor is built in: see "Analytics" in STAGING.md for
+// GA4 and Umami snippets to paste into Layout.astro. The ID is passed to the snippet:
+//
+//   <Analytics>{(id: string) => <script is:inline ...>...</script>}</Analytics>
+import { isProduction } from '../lib/environment';
+
+const id = import.meta.env.PUBLIC_ANALYTICS_ID;
+const html = isProduction && id && Astro.slots.has('default') ? await Astro.slots.render('default', [id]) : '';
+---
+
+{html && <Fragment set:html={html} />}

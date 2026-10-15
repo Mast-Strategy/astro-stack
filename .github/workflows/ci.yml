@@ -1,0 +1,31 @@
+# Checks every pull request: the site must build and its internal links must work.
+# Deploys are separate: Cloudflare Workers Builds handles those.
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # Internal links only (--offline), so the result doesn't depend on other websites.
+      - name: Check links in dist/
+        uses: lycheeverse/lychee-action@v2.9.0
+        with:
+          args: --offline --no-progress --root-dir "${{ github.workspace }}/dist" "dist/**/*.html"
+          fail: true

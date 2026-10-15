@@ -4,9 +4,19 @@ A design-neutral starting point for client websites. It provides the software st
 
 - **Astro 7** builds the site into plain static files. **Tailwind v4** is installed but not used yet.
 - **Sveltia CMS** at `/admin/` lets the owner edit copy and images in the browser. Each save is a Git commit.
-- **Cloudflare Workers** hosts the files and rebuilds the site on every push to `main` (about a minute).
+- **Cloudflare Workers** hosts the files and rebuilds the site on every push to `main` (about a minute). Every other branch gets its own preview address.
 
 The example content (a home page, a 404 page and site settings) only shows how the pieces connect. Replace it for each client.
+
+## Docs
+
+| File | Use it for |
+|---|---|
+| `STARTER-CHECKLIST.md` | Setting up a new client site: accounts, CMS sign-in, hosting, go-live |
+| `STAGING.md` | Making changes: branch → preview → review → merge, rollback, analytics |
+| `docs/pre-launch-qa.md` | Checks before and after launch |
+| `docs/cutover-runbook.md` | Moving the client's domain without breaking their email |
+| `SPIKE-NOTES.md` | The record of the technical spike that proved this stack |
 
 ## How content gets to the page
 
@@ -27,10 +37,12 @@ Follow `STARTER-CHECKLIST.md` for the full account and hosting setup. The values
 | Value | Where | Set it to |
 |---|---|---|
 | Worker name | `"name"` in `wrangler.jsonc` (and `package.json`) | The Worker name in Cloudflare. Must match exactly. |
-| Repo | `backend.repo` in `public/admin/config.yml` | `<github-owner>/<repo-name>` |
+| Site address | `siteUrl` in `site.config.mjs` | The `workers.dev` address until go-live, then `https://<domain>`. Used for canonical tags, the sitemap and `robots.txt`. |
+| Repo | `backend.repo` in `public/admin/config.yml` | `<owner>/<repo>` |
 | Login helper | `backend.base_url` in `public/admin/config.yml` | `https://sveltia-cms-auth.<subdomain>.workers.dev` |
 | Allowed domains | `ALLOWED_DOMAINS` secret on the `sveltia-cms-auth` Worker in Cloudflare (not in this repo) | Every domain the CMS is used from: the `workers.dev` address plus the client's domain(s) |
 | Redirects | `public/_redirects` | 301s from the old site's URLs, plus one slash line per page |
+| Analytics ID | `PUBLIC_ANALYTICS_ID` build variable on the Worker in Cloudflare (not in this repo) | The vendor's ID. Also paste the vendor's snippet into `Layout.astro`; see "Analytics" in `STAGING.md`. |
 
 Where the design work goes:
 
@@ -49,6 +61,11 @@ Leave these alone unless you mean to change the stack: `astro.config.mjs` (`trai
 | `npm run dev` | Local preview at `http://localhost:4321`; CMS at `/admin/index.html` |
 | `npm run build` | Builds the site into `dist/`. Run before every commit. |
 
-## Background
+## Search engines and environments
 
-`SPIKE-NOTES.md` is the record of the technical spike that proved this stack, including the setup problems found along the way.
+- Every page has an absolute canonical tag built from `siteUrl`.
+- `@astrojs/sitemap` writes `sitemap-index.xml`, leaving out the 404 page and `/admin/`.
+- `src/pages/robots.txt.ts` writes `robots.txt`.
+- Branch previews and the dev server get `noindex` and `Disallow: /`. Production and any build that can't be identified stay indexable. See `STAGING.md` for how the environment is detected.
+
+Pull requests run `.github/workflows/ci.yml`, which builds the site and checks its internal links.

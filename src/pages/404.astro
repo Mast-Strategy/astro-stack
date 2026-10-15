@@ -6,7 +6,7 @@ const page = (await getEntry('pages', 'not-found'))!;
 const { Content } = await render(page);
 ---
 
-<Layout title={page.data.title} description={page.data.description}>
+<Layout title={page.data.title} description={page.data.description} noindex>
 	<h1>{page.data.title}</h1>
 	<Content />
 	{page.data.link_label && <a href="/">{page.data.link_label}</a>}

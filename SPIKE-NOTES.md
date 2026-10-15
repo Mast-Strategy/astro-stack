@@ -52,7 +52,7 @@ Astro 7.3.8 · Tailwind CSS v4 · Sveltia CMS 0.239.1 (pinned in `public/admin/`
 - **Token expiry.** If "Expire user access tokens" was left on, check whether an editor is still signed in after 8+ hours, or gets a clean prompt to sign in again.
 - **Editor onboarding.** Each editor needs their own GitHub account with **write** access to the repo. Decide who creates the client's account and whether that's acceptable for the owner.
 - **Custom domain.** When the client domain is attached, add it to `ALLOWED_DOMAINS`. Optionally add the homepage URL to the OAuth app.
-- **Preview URLs.** These are `*-ia-stack-test.square-shadow-cb0d.workers.dev`. CMS sign-in on previews needs a wildcard in `ALLOWED_DOMAINS` or a `site_domain` setting. Not tested.
+- **Preview URLs.** These are `*-ia-stack-test.square-shadow-cb0d.workers.dev`. CMS sign-in on previews needs a wildcard in `ALLOWED_DOMAINS`. Tested 2026-10-15 with `*-ia-stack-test.square-shadow-cb0d.workers.dev`: it works, and other Workers on the account are still refused.
 - **Rocket Loader.** If it is on for the custom domain zone, the CMS page can go blank. The skill's fix is `data-cfasync="false"` on the script tag.
 
 ## To do before this becomes the starter repo
@@ -66,7 +66,7 @@ Astro 7.3.8 · Tailwind CSS v4 · Sveltia CMS 0.239.1 (pinned in `public/admin/`
 - [ ] Replace placeholder copy, phone number and email. Remove the "auto-deploy test 1" footer text and the test headline.
 - [x] Turn the Cloudflare and GitHub browser steps (below) into a checklist: `STARTER-CHECKLIST.md`. Screenshots still to add.
 - [ ] Decide how to update Sveltia, since it is pinned and pre-1.0: bump the version in `index.html` and the config schema line together.
-- [ ] The personal access token used to push expires in 30 days. A long-lived setup needs a different credential (e.g. the GitHub CLI or SSH key).
+- [x] The personal access token used to push expires in 30 days. A long-lived setup needs a different credential (e.g. the GitHub CLI or SSH key). Now covered in "Before you start" in `STARTER-CHECKLIST.md`.
 
 ## Browser steps the owner or strategist had to do
 
