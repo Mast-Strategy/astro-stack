@@ -66,7 +66,7 @@ Astro 7.3.8 · Tailwind CSS v4 · Sveltia CMS 0.239.1 (pinned in `public/admin/`
 - [ ] Replace placeholder copy, phone number and email. Remove the "auto-deploy test 1" footer text and the test headline.
 - [x] Turn the Cloudflare and GitHub browser steps (below) into a checklist: `STARTER-CHECKLIST.md`. Screenshots still to add.
 - [ ] Decide how to update Sveltia, since it is pinned and pre-1.0: bump the version in `index.html` and the config schema line together.
-- [ ] The personal access token used to push expires in 30 days. A long-lived setup needs a different credential (e.g. the GitHub CLI or SSH key).
+- [x] The personal access token used to push expires in 30 days. A long-lived setup needs a different credential (e.g. the GitHub CLI or SSH key). Now covered in "Before you start" in `STARTER-CHECKLIST.md`.
 
 ## Browser steps the owner or strategist had to do
 
