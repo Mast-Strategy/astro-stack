@@ -1,0 +1,9 @@
+# Cloudflare Workers static assets redirects: <from> <to> <status>
+# Limits: 2,000 static + 100 dynamic rules. Supported codes: 301, 302, 303, 307, 308.
+
+# Old Hostinger URLs (placeholders until the real URL list is pulled from the old site)
+/home.html / 301
+/old-services /services/ 301
+
+# Spike test: can an explicit 301 replace Cloudflare's automatic 307 trailing-slash redirect?
+/services /services/ 301
