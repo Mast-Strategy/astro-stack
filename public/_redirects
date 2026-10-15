@@ -1,9 +1,22 @@
-# Cloudflare Workers static assets redirects: <from> <to> <status>
+# Cloudflare Workers static assets redirects. One rule per line: <from> <to> <status>
 # Limits: 2,000 static + 100 dynamic rules. Supported codes: 301, 302, 303, 307, 308.
+# Rules here run before Cloudflare's own trailing-slash handling.
+#
+# HOW TO ADD A 301 (permanent) REDIRECT
+#   1. <from> is the old path only, no domain: /about-us.html  (not https://example.com/about-us.html)
+#   2. <to> is the new page, always ending in a slash: /about/   (or a full https:// URL for another site)
+#   3. Status is 301 for pages that moved for good.
+#   4. One line per old URL. Run `npm run build`, push, then check with:
+#        curl -sI https://<site>/about-us.html   -> expect "301" and "location: /about/"
+#
+# Wildcards: /blog/* /news/:splat 301 sends every /blog/... URL to the same path under /news/.
+# Query strings (?page=2) are ignored when matching.
 
-# Old Hostinger URLs (placeholders until the real URL list is pulled from the old site)
+# --- Old website URLs (placeholders until the real list is pulled from a crawl of the old site) ---
 /home.html / 301
 /old-services /services/ 301
 
-# Spike test: can an explicit 301 replace Cloudflare's automatic 307 trailing-slash redirect?
+# --- Trailing slash: every page URL ends in "/" (see astro.config.mjs and wrangler.jsonc) ---
+# Without these lines Cloudflare still adds the slash, but with a temporary 307 redirect.
+# Add one line per page so search engines get a permanent 301. Do not add one for "/".
 /services /services/ 301

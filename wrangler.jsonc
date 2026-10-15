@@ -6,6 +6,9 @@
 	// Static-only site: no "main" Worker script and no Astro Cloudflare adapter.
 	"assets": {
 		"directory": "./dist",
+		// Every page URL ends in a slash, matching trailingSlash: 'always' in astro.config.mjs.
+		// Cloudflare adds the slash with a 307 (temporary) redirect; public/_redirects lists 301s.
+		"html_handling": "force-trailing-slash",
 		// Serve dist/404.html with a real 404 status for unknown URLs.
 		"not_found_handling": "404-page"
 	}
