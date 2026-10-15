@@ -91,7 +91,7 @@ This is where the spike lost the most time. Read it twice.
 - [ ] If the helper is shared by several sites, add each site's addresses to the same `ALLOWED_DOMAINS` list.
 - [ ] **Wildcards (`*`)** work, but with two catches:
   - **A wildcard never matches the bare domain.** `*.<domain>` matches `www.<domain>` but **not** `<domain>`, so list both.
-  - **A broad wildcard trusts more than you mean to.** `*.<subdomain>.workers.dev` lets **any** Worker on that Cloudflare account ask the helper for a GitHub token. For CMS sign-in on previews, use the narrower `*-<worker>.<subdomain>.workers.dev`, which only matches that site's previews. Sign-in on previews hasn't been tested yet.
+  - **A broad wildcard trusts more than you mean to.** `*.<subdomain>.workers.dev` lets **any** Worker on that Cloudflare account ask the helper for a GitHub token. For CMS sign-in on previews, use the narrower `*-<worker>.<subdomain>.workers.dev`, which only matches that site's previews. Tested: sign-in works on previews with it.
 - [ ] Ignore the "keep deployments in sync" alert Cloudflare may show for the helper. It's about plain variables, and these are Secrets.
 
 ## 7. Point the CMS at the helper and test an edit
@@ -101,6 +101,11 @@ This is where the spike lost the most time. Read it twice.
 - [ ] The sign-in screen must show **no red error messages**. If it does, each one names the field to fix in `config.yml`.
 - [ ] **Sign In with GitHub**, approve the pop-up, change one word on a page and **Save**.
 - [ ] Within about a minute: GitHub shows a new commit from you, and the live site shows the change.
+- [ ] **If sign-in goes wrong:**
+  - **Grey "Authorize" button in the pop-up:** click inside the pop-up, wait 2–3 seconds, and use Chrome with pop-ups allowed. **Don't** open the pop-up's address in a normal tab: you can approve the app there, but the sign-in can't get back to the CMS, and you're left with a blank white page at `/callback`. Once approved, later sign-ins skip that screen.
+  - **`incorrect_client_credentials`:** the helper's Client ID and client secret come from different OAuth apps, or the secret was pasted wrongly. Generate a new client secret on the app, use the copy icon, and **Rotate** `GITHUB_CLIENT_SECRET` on the helper (Runtime box).
+  - **`UNSUPPORTED_DOMAIN`:** the address you're on isn't in `ALLOWED_DOMAINS`.
+  - **`MISCONFIGURED_CLIENT`:** the keys are in the Build box instead of the Runtime one (step 6).
 
 ## 8. Redirects from the old site
 

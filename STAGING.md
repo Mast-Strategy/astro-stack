@@ -38,7 +38,7 @@ Preview addresses are **public**: anyone with the link can open them. They're ha
 - [ ] A made-up address on the preview (e.g. `/nope/`) still shows the branded "page not found" page.
 - [ ] New redirects work: `curl -sI https://<preview-address>/old-path` shows `301` and the new address.
 - [ ] Nothing on the page says "Example", "Lorem ipsum" or another placeholder.
-- [ ] The CMS still loads at `https://<preview-address>/admin/` with **no red errors** on the sign-in screen. Signing in on a preview needs the preview address in `ALLOWED_DOMAINS`; this hasn't been tested yet.
+- [ ] The CMS still loads at `https://<preview-address>/admin/` with **no red errors** on the sign-in screen. Signing in on a preview works when `ALLOWED_DOMAINS` includes `*-<worker>.<subdomain>.workers.dev` (tested 2026-10-15). Remember that a save there still commits to `main` and goes live.
 
 ## Client edits in the CMS skip the preview
 
