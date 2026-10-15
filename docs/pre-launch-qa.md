@@ -30,6 +30,7 @@ Tick each item, or note why it doesn't apply.
 - [ ] **No noindex on production.** View source shows no `<meta name="robots" content="noindex`, except on the 404 page.
 - [ ] **No noindex header.** `curl -sI https://<domain>/ | grep -i robots` returns nothing.
 - [ ] **robots.txt allows crawling.** `https://<domain>/robots.txt` shows `Allow: /` and a `Sitemap:` line on the real domain.
+- [ ] **Check for Cloudflare's own robots.txt text.** Cloudflare can serve or add a "content signals" block about AI crawlers (managed robots.txt, under the domain's **Security → Bots** settings). It was seen on the spike's `workers.dev` address before the starter had a `robots.txt`. Make sure our `Allow` and `Sitemap:` lines are still there, and decide with the client whether to keep Cloudflare's block.
 - [ ] **The sitemap** lists every page, on the real domain, and nothing else (no 404, no `/admin/`).
 - [ ] **Each page has its own title and description** (view source, or a browser SEO extension).
 
