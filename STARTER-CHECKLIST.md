@@ -42,9 +42,16 @@ Placeholders used below:
 
 ## 2. Protect `main` (once per repo)
 
-- [ ] GitHub → repo → **Settings → Branches** (or **Rules**) → add a rule for `main`: require a pull request and the **CI** check to pass. That way every change goes through a preview first (see `STAGING.md`).
-- [ ] On a **free** organization this may only be available for **public** repos. If the option is missing on a private repo, agree as a team never to push to `main`, and note the gap in the client's project notes.
-- [ ] CMS saves still go straight to `main`. That's expected: they're made by the CMS, not pushed by hand. See "Client edits in the CMS skip the preview" in `STAGING.md`.
+**Read this first:** the CMS saves straight to `main`, as whoever is signed in. A rule that requires pull requests blocks those saves too, unless the editor is on the rule's **bypass list**. GitHub can't tell a CMS save from a normal push by the same person, so bypassers can also push directly. For them, "never push to `main`" is a team rule.
+
+- [ ] GitHub → repo → **Settings → Rules → Rulesets → New ruleset → New branch ruleset**:
+  - Name `Protect main`, Enforcement **Active**.
+  - **Bypass list:** **Repository admin**, set to **Always allow**. Also add every CMS editor who isn't an admin, e.g. an organization team such as `<client>-editors` (also **Always allow**).
+  - **Target:** **Include default branch**.
+  - **Rules:** **Restrict deletions**, **Block force pushes**, **Require a pull request before merging** (required approvals **0** if you work alone), and **Require status checks to pass** → add `build` (GitHub Actions).
+- [ ] **Simpler option if a client has several editors:** tick only **Restrict deletions** and **Block force pushes**. CMS saves then never get blocked, and pull requests and CI stay the agreed way of working rather than enforced.
+- [ ] Test it: a CMS save by a client editor must still work after the rule is on.
+- [ ] On a **free** organization, rulesets may only be available for **public** repos. If the option is missing on a private repo, agree as a team never to push to `main`, and note the gap in the client's project notes.
 
 ## 3. Connect the repo to Cloudflare (hosting + automatic deploys)
 
