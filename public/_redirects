@@ -12,11 +12,11 @@
 # Wildcards: /blog/* /news/:splat 301 sends every /blog/... URL to the same path under /news/.
 # Query strings (?page=2) are ignored when matching.
 
-# --- Old website URLs (placeholders until the real list is pulled from a crawl of the old site) ---
+# --- Old website URLs (replace with the client's real list from a crawl of their old site) ---
 /home.html / 301
-/old-services /services/ 301
+# /old-about-us.html /about/ 301
 
 # --- Trailing slash: every page URL ends in "/" (see astro.config.mjs and wrangler.jsonc) ---
 # Without these lines Cloudflare still adds the slash, but with a temporary 307 redirect.
 # Add one line per page so search engines get a permanent 301. Do not add one for "/".
-/services /services/ 301
+# /about /about/ 301

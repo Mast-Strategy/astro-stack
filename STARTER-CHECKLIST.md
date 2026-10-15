@@ -1,6 +1,6 @@
 # New client site: setup checklist
 
-Step-by-step setup for a new client site built from this starter (Astro + Tailwind + Sveltia CMS on Cloudflare Workers). It turns the browser steps from `SPIKE-NOTES.md` into a list you can tick off. Allow about an hour the first time.
+Step-by-step setup for a new client site built from this starter (Astro + Tailwind + Sveltia CMS on Cloudflare Workers). It covers the accounts, sign-in and hosting; the site's design is separate and different for every client. It turns the browser steps from `SPIKE-NOTES.md` into a list you can tick off. Allow about an hour the first time.
 
 Placeholders used below:
 
@@ -25,8 +25,8 @@ Placeholders used below:
 - [ ] In `wrangler.jsonc`, set `"name"` to `<worker>`. It **must** match the Worker name you'll type in Cloudflare in step 3, or builds fail.
 - [ ] In `package.json`, set `"name"` to the same value (tidy, not required).
 - [ ] In `public/admin/config.yml`, set `repo:` to `<owner>/<repo>`. Leave `base_url` until step 5.
-- [ ] Replace the placeholder copy in `src/content/` (business name, phone, email, home page text, menu links). Every word on the site lives in these files.
-- [ ] Put the client's hero photo in `src/content/pages/images/` and set `image:` in `home.md` to `images/<file name>`. Use a large JPG or PNG (about 2400 px wide); the build makes the smaller versions.
+- [ ] Build the client's design and pages (see "Starting a new client site" in `README.md`). Keep every word of copy in `src/content/`, with a matching field in `public/admin/config.yml`.
+- [ ] Put page images in `src/content/pages/images/` and reference them as `images/<file name>`. Use large JPGs or PNGs (about 2400 px wide); the build makes the smaller versions. Delete the example image.
 - [ ] Run `npm run build`. It must end with `Complete!`.
 
 ## 2. First push to GitHub
@@ -79,9 +79,9 @@ This is where the spike lost the most time. Read it twice.
 ## 7. Point the CMS at the helper and test an edit
 
 - [ ] In `public/admin/config.yml`, set `base_url: https://sveltia-cms-auth.<subdomain>.workers.dev`. Run `npm run build`, commit and push.
-- [ ] Open `https://<worker>.<subdomain>.workers.dev/admin/` (on the live site; GitHub sign-in doesn't work from your own computer).
+- [ ] Open `https://<worker>.<subdomain>.workers.dev/admin/` on the live site. GitHub sign-in doesn't work from your own computer.
 - [ ] The sign-in screen must show **no red error messages**. If it does, each one names the field to fix in `config.yml`.
-- [ ] **Sign In with GitHub**, approve the pop-up, change one word on the home page and **Save**.
+- [ ] **Sign In with GitHub**, approve the pop-up, change one word on a page and **Save**.
 - [ ] Within about a minute: GitHub shows a new commit from you, and the live site shows the change.
 
 ## 8. Redirects from the old site
@@ -89,7 +89,7 @@ This is where the spike lost the most time. Read it twice.
 - [ ] Get every URL from the old site: a crawl (e.g. Screaming Frog), the old `sitemap.xml`, and the top pages in Google Search Console.
 - [ ] For each old URL, add one line to `public/_redirects`: `/old-path /new-page/ 301`. The file's comments explain the format.
 - [ ] For each page on the new site (except the home page), add a slash line such as `/about /about/ 301`. Without it, Cloudflare still adds the slash, but with a temporary (307) redirect.
-- [ ] Remove the spike placeholders (`/home.html`, `/old-services`) if they don't apply.
+- [ ] Remove the example `/home.html` line if the old site had no such page.
 - [ ] After pushing, test a few: `curl -sI https://<worker>.<subdomain>.workers.dev/old-path` should show `301` and the new address.
 - [ ] Open a made-up address (e.g. `/nope/`). You should see the branded "page not found" page.
 
@@ -111,6 +111,6 @@ This is where the spike lost the most time. Read it twice.
 ## Good to know
 
 - **Local editing:** on your own computer, open `http://localhost:4321/admin/index.html` (not `/admin/`) and choose **Work with Local Repository** in Chrome or Edge. Changes are saved to the files on disk; you commit them yourself.
-- **Page addresses end in a slash.** In development, `/services` shows "not found" and `/services/` works. On the live site the first one redirects to the second.
+- **Page addresses end in a slash.** In development, `/about` shows "not found" and `/about/` works. On the live site the first one redirects to the second.
 - **Images:** page images go in `src/content/pages/images/` and are resized automatically. Images added inside page text go to `public/images/` and are served as uploaded, so keep those small.
 - **Updating the CMS:** the version number appears twice: in the script tag in `public/admin/index.html` and in the first line of `public/admin/config.yml`. Change both together, then re-check the sign-in screen for errors.
