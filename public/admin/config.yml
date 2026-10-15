@@ -7,6 +7,7 @@ backend:
   # Sveltia CMS Authenticator (separate Worker) that handles the GitHub OAuth exchange.
   base_url: https://sveltia-cms-auth.square-shadow-cb0d.workers.dev
 
+# Default upload folder (e.g. images placed inside rich text). Served as is, not optimized.
 media_folder: public/images
 public_folder: /images
 
@@ -30,7 +31,8 @@ collections:
             fields:
               - { name: headline, label: Headline }
               - { name: subheadline, label: Subheadline, widget: text, required: false }
-              - { name: image, label: Background image, widget: image, required: false }
+              # Saved next to the page in src/content/pages/images so Astro optimizes it at build time.
+              - { name: image, label: Background image, widget: image, required: false, media_folder: images, public_folder: images }
               - { name: image_alt, label: Image description (for screen readers), required: false }
               - { name: cta_label, label: Button text, required: false }
               - { name: cta_link, label: Button link, required: false }

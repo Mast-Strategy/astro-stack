@@ -4,16 +4,18 @@ import { z } from 'astro/zod';
 
 // Page copy. One Markdown file per page in src/content/pages, edited through Sveltia CMS.
 // Optional fields only apply to the pages that use them (e.g. hero and services on home).
+// Images live next to the pages in src/content/pages/images, so image() lets Astro resize
+// and convert them at build time (public/ files are served as is).
 const pages = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/pages' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string().optional(),
     hero: z
       .object({
         headline: z.string(),
         subheadline: z.string().optional(),
-        image: z.string().optional(),
+        image: image().optional(),
         image_alt: z.string().optional(),
         cta_label: z.string().optional(),
         cta_link: z.string().optional(),

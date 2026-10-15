@@ -4,7 +4,7 @@ description: Wildfire mitigation services for Colorado property owners.
 hero:
   headline: I think it worked
   subheadline: Placeholder hero copy. Defensible space, home hardening and fuel reduction across Colorado.
-  image: /images/hero.svg
+  image: images/hero.jpg
   image_alt: Stylized mountain ridge at sunset
   cta_label: See our services
   cta_link: /services/
