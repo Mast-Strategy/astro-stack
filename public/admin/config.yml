@@ -4,6 +4,8 @@ backend:
   name: github
   repo: anthonyashley/astro-plus-testing
   branch: main
+  # Sveltia CMS Authenticator (separate Worker) that handles the GitHub OAuth exchange.
+  base_url: https://sveltia-cms-auth.square-shadow-cb0d.workers.dev
 
 media_folder: public/images
 public_folder: /images
