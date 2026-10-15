@@ -16,6 +16,7 @@ output:
   omit_empty_optional_fields: true
 
 collections:
+  # Each "files" entry is one content file. Field names must match src/content.config.ts.
   - name: pages
     label: Pages
     files:
@@ -25,32 +26,11 @@ collections:
         fields:
           - { name: title, label: Page name }
           - { name: description, label: Search engine description, widget: text, required: false }
-          - name: hero
-            label: Hero
-            widget: object
-            fields:
-              - { name: headline, label: Headline }
-              - { name: subheadline, label: Subheadline, widget: text, required: false }
-              # Saved next to the page in src/content/pages/images so Astro optimizes it at build time.
-              - { name: image, label: Background image, widget: image, required: false, media_folder: images, public_folder: images }
-              - { name: image_alt, label: Image description (for screen readers), required: false }
-              - { name: cta_label, label: Button text, required: false }
-              - { name: cta_link, label: Button link, required: false }
-          - name: services
-            label: Services
-            widget: list
-            required: false
-            fields:
-              - { name: name, label: Service name }
-              - { name: summary, label: Summary, widget: text, required: false }
-          - { name: body, label: Intro text, widget: richtext }
-      - name: services
-        label: Services page
-        file: src/content/pages/services.md
-        fields:
-          - { name: title, label: Page title }
-          - { name: description, label: Search engine description, widget: text, required: false }
-          - { name: body, label: Page text, widget: richtext }
+          - { name: heading, label: Heading, required: false }
+          # Saved next to the page in src/content/pages/images so Astro optimizes it at build time.
+          - { name: image, label: Image, widget: image, required: false, media_folder: images, public_folder: images }
+          - { name: image_alt, label: Image description (for screen readers), required: false }
+          - { name: body, label: Body text, widget: richtext }
       - name: not-found
         label: Page not found (404)
         file: src/content/pages/not-found.md
@@ -58,27 +38,15 @@ collections:
           - { name: title, label: Heading }
           - { name: description, label: Search engine description, widget: text, required: false }
           - { name: body, label: Message, widget: richtext }
-          - { name: button_label, label: Button text, required: false }
-          - { name: button_link, label: Button link, required: false }
+          - { name: link_label, label: Home link text, required: false }
 
   - name: settings
     label: Site settings
     files:
       - name: site
-        label: Business details
+        label: Site details
         file: src/content/settings/site.yml
         fields:
-          - { name: business_name, label: Business name }
-          - { name: tagline, label: Tagline, required: false }
-          - { name: phone, label: Phone, required: false }
+          - { name: site_name, label: Site name }
           - { name: email, label: Email, required: false }
-          - { name: service_area, label: Service area, required: false }
-          - { name: service_area_prefix, label: Word before service area in footer (e.g. "Serving"), required: false }
-          - name: nav
-            label: Menu links
-            widget: list
-            required: false
-            fields:
-              - { name: label, label: Link text }
-              - { name: link, label: Link address (e.g. /services/) }
-          - { name: footer_note, label: Footer note, widget: text, required: false }
+          - { name: footer_text, label: Footer text, widget: text, required: false }

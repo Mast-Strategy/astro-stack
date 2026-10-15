@@ -1,4 +1,5 @@
 ---
+// Base layout. Deliberately unstyled: each client's design is built here and in src/pages.
 import '../styles/global.css';
 import { getEntry } from 'astro:content';
 
@@ -9,7 +10,7 @@ interface Props {
 
 const { title, description } = Astro.props;
 const site = (await getEntry('settings', 'site'))!.data;
-const pageTitle = title === 'Home' ? site.business_name : `${title} | ${site.business_name}`;
+const pageTitle = title === 'Home' ? site.site_name : `${title} | ${site.site_name}`;
 ---
 
 <html lang="en">
@@ -22,25 +23,16 @@ const pageTitle = title === 'Home' ? site.business_name : `${title} | ${site.bus
 		<title>{pageTitle}</title>
 		{description && <meta name="description" content={description} />}
 	</head>
-	<body class="flex min-h-screen flex-col bg-stone-50 text-stone-900">
-		<header class="border-b border-stone-200 bg-white">
-			<div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-				<a href="/" class="font-bold text-orange-800">{site.business_name}</a>
-				<nav class="flex gap-4 text-sm">
-					{site.nav?.map((item) => <a href={item.link} class="hover:text-orange-800">{item.label}</a>)}
-					{site.phone && <a href={`tel:${site.phone.replace(/[^\d+]/g, '')}`} class="hover:text-orange-800">{site.phone}</a>}
-				</nav>
-			</div>
+	<body>
+		<header>
+			<a href="/">{site.site_name}</a>
 		</header>
-		<main class="flex-1">
+		<main>
 			<slot />
 		</main>
-		<footer class="border-t border-stone-200 bg-white text-sm text-stone-600">
-			<div class="mx-auto max-w-5xl space-y-1 px-4 py-6">
-				<p>{site.business_name}{site.service_area && ` · ${[site.service_area_prefix, site.service_area].filter(Boolean).join(' ')}`}</p>
-				{site.email && <p><a href={`mailto:${site.email}`} class="underline">{site.email}</a></p>}
-				{site.footer_note && <p>{site.footer_note}</p>}
-			</div>
+		<footer>
+			{site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
+			{site.footer_text && <p>{site.footer_text}</p>}
 		</footer>
 	</body>
 </html>

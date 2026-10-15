@@ -1,8 +1,7 @@
 ---
 title: Page not found
 description: The page you were looking for doesn't exist.
-button_label: Home
-button_link: /
+link_label: Go to the home page
 ---
 
-Sorry, we couldn't find that page. It may have moved when we rebuilt the site. Try the home page or call us.
+Example message for unknown addresses.
