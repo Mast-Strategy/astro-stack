@@ -11,5 +11,8 @@
 		"html_handling": "force-trailing-slash",
 		// Serve dist/404.html with a real 404 status for unknown URLs.
 		"not_found_handling": "404-page"
-	}
+	},
+	// Required by Workers Builds preview builds (`npx wrangler preview`) for every non-main branch.
+	// Empty because previews use the same settings as above. Doesn't affect production deploys.
+	"previews": {}
 }
