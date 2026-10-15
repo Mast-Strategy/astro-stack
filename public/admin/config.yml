@@ -56,6 +56,8 @@ collections:
           - { name: title, label: Heading }
           - { name: description, label: Search engine description, widget: text, required: false }
           - { name: body, label: Message, widget: richtext }
+          - { name: button_label, label: Button text, required: false }
+          - { name: button_link, label: Button link, required: false }
 
   - name: settings
     label: Site settings
@@ -69,4 +71,12 @@ collections:
           - { name: phone, label: Phone, required: false }
           - { name: email, label: Email, required: false }
           - { name: service_area, label: Service area, required: false }
+          - { name: service_area_prefix, label: Word before service area in footer (e.g. "Serving"), required: false }
+          - name: nav
+            label: Menu links
+            widget: list
+            required: false
+            fields:
+              - { name: label, label: Link text }
+              - { name: link, label: Link address (e.g. /services/) }
           - { name: footer_note, label: Footer note, widget: text, required: false }

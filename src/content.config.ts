@@ -27,6 +27,9 @@ const pages = defineCollection({
         }),
       )
       .optional(),
+    // 404 page button.
+    button_label: z.string().optional(),
+    button_link: z.string().optional(),
   }),
 });
 
@@ -39,6 +42,8 @@ const settings = defineCollection({
     phone: z.string().optional(),
     email: z.string().optional(),
     service_area: z.string().optional(),
+    service_area_prefix: z.string().optional(),
+    nav: z.array(z.object({ label: z.string(), link: z.string() })).optional(),
     footer_note: z.string().optional(),
   }),
 });

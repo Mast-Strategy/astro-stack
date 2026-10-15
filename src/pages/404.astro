@@ -13,6 +13,10 @@ const { Content } = await render(page);
 		<div class="mx-auto mt-4 max-w-xl text-stone-600">
 			<Content />
 		</div>
-		<a href="/" class="mt-8 inline-block rounded bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700">Home</a>
+		{page.data.button_label && (
+			<a href={page.data.button_link ?? '/'} class="mt-8 inline-block rounded bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700">
+				{page.data.button_label}
+			</a>
+		)}
 	</section>
 </Layout>

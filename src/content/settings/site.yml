@@ -3,4 +3,8 @@ tagline: Wildfire mitigation for Colorado homes and land
 phone: (970) 555-0100
 email: info@example.com
 service_area: Colorado
+service_area_prefix: Serving
+nav:
+  - label: Services
+    link: /services/
 footer_note: Placeholder copy for the technical spike (auto-deploy test 1). Replace with approved client copy.
