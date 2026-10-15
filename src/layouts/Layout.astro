@@ -2,15 +2,20 @@
 // Base layout. Deliberately unstyled: each client's design is built here and in src/pages.
 import '../styles/global.css';
 import { getEntry } from 'astro:content';
+import { isNonProduction } from '../lib/environment';
 
 interface Props {
 	title: string;
 	description?: string;
+	// Keep this page out of search results everywhere, e.g. the 404 page.
+	noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const site = (await getEntry('settings', 'site'))!.data;
 const pageTitle = title === 'Home' ? site.site_name : `${title} | ${site.site_name}`;
+// Absolute address from siteUrl in site.config.mjs, so previews still point search engines at production.
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <html lang="en">
@@ -22,6 +27,8 @@ const pageTitle = title === 'Home' ? site.site_name : `${title} | ${site.site_na
 		<meta name="generator" content={Astro.generator} />
 		<title>{pageTitle}</title>
 		{description && <meta name="description" content={description} />}
+		{!noindex && <link rel="canonical" href={canonical} />}
+		{(noindex || isNonProduction) && <meta name="robots" content="noindex, nofollow" />}
 	</head>
 	<body>
 		<header>
