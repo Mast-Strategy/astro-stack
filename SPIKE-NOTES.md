@@ -57,11 +57,12 @@ Astro 7.3.8 · Tailwind CSS v4 · Sveltia CMS 0.239.1 (pinned in `public/admin/`
 
 ## To do before this becomes the starter repo
 
-- [ ] Move the remaining UI labels into content: the "Services" nav link, the 404 "Home" button, and the "Serving" prefix in the footer.
-- [ ] Image optimization: images sit in `public/images` and are served unoptimized. Consider entry-relative media folders and Astro's `image()` helper.
-- [ ] Set a trailing-slash policy (Astro `trailingSlash` plus `html_handling`) and generate a 301 for each old Hostinger URL from a crawl of the old site.
+- [x] Move the remaining UI labels into content: the "Services" nav link, the 404 "Home" button, and the "Serving" prefix in the footer. Now "Menu links" and "Word before service area" in Site settings, and "Button text/link" on the 404 page.
+- [x] Image optimization: the hero image now lives in `src/content/pages/images` and goes through Astro's `image()` helper, so the build makes resized WebP versions. Images inserted into page text still go to `public/images` unoptimized.
+- [x] Set a trailing-slash policy: Astro `trailingSlash: 'always'` plus `html_handling: force-trailing-slash`. How to add 301s is documented in `public/_redirects`.
+- [ ] Generate a 301 for each old Hostinger URL from a crawl of the old site (per client; see step 8 of `STARTER-CHECKLIST.md`).
 - [ ] Replace placeholder copy, phone number and email. Remove the "auto-deploy test 1" footer text and the test headline.
-- [ ] Turn the Cloudflare and GitHub browser steps (below) into a checklist with screenshots.
+- [x] Turn the Cloudflare and GitHub browser steps (below) into a checklist: `STARTER-CHECKLIST.md`. Screenshots still to add.
 - [ ] Decide how to update Sveltia, since it is pinned and pre-1.0: bump the version in `index.html` and the config schema line together.
 - [ ] The personal access token used to push expires in 30 days. A long-lived setup needs a different credential (e.g. the GitHub CLI or SSH key).
 
